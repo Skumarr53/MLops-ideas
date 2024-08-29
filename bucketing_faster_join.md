@@ -22,4 +22,6 @@ bucketed_jobs2 = spark.read.table("bucketed_jobs2")
 
 # Step 6: Perform join operation using the bucketed DataFrames
 joined_df = bucketed_jobs1.join(bucketed_jobs2, "JOB_HASH")
+
+
 ```
