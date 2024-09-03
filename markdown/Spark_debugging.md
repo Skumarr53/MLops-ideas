@@ -302,3 +302,8 @@ By implementing these updates, the code should handle `None` values gracefully, 
 *   Utilize debugging tools in your IDE.
 
 By following these strategies, you should be able to effectively debug your PySpark code and identify the root cause of errors.
+
+
+thanks for the call pot hole 
+
+frog the prank  
