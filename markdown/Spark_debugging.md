@@ -77,7 +77,184 @@ Errors may occur due to incompatible data types or malformed data:
     ```python
     df.show(5, truncate=False)
     ```
-    
+
+## Modify function 
+
+To address the issue in your PySpark code, where one of the functions is likely misbehaving due to `None` input, you can take a systematic approach to identify and handle `None` values properly. Here are some strategies to diagnose and fix the issue:
+
+### 1\. Identify the Problematic Function
+
+From the code, there are multiple UDFs and functions that interact with columns which could potentially contain `None` values:
+------------------------------------------------------------------------------------------------------------------------------
+
+*   `extract_salary`
+*   `yoe_to_value`
+*   `education_to_age`
+*   `extract_degree`
+*   `extract_years_of_experience`
+*   `convert_to_recode`
+
+Since the error is likely due to a `None` input, wrapping each function with a `try-except` block and checking for `None` inputs before processing them will help to prevent exceptions.
+
+### 2\. Update the Functions to Handle `None` Values
+
+#### Update `extract_salary` Function
+
+Modify the `extract_salary` function to handle cases where `dollar_str` might be `None`:
+
+```python
+
+def extract_salary(dollar_strs, hourly_range=hourly_range, salary_range=salary_range, agg='avg'
+):
+    if not dollar_strs or len(dollar_strs) == 0:
+        return None
+    try:
+        salary = []
+        for dollar_str in dollar_strs:
+            if dollar_str is None:
+                continue  # Skip None values
+            dollar_str = dollar_str.strip('$').replace(',', '')
+            if '-' in dollar_str:
+                dollar_str = dollar_str.split('-')[1].strip()
+            value = 0
+            if ' ' in dollar_str:
+                value = float(dollar_str.split()[0]) * multipliers.get(dollar_str.split()[1], 1)
+            elif dollar_str[-1] in multipliers:
+                value = float(dollar_str[:-1]) * multipliers[dollar_str[-1]]
+            else:
+                value = float(dollar_str)
+            if hourly_range[0] <= value <= hourly_range[1] or salary_range[0] <= value <= salary_range[1]:
+                salary.append(value)
+        if agg == 'max':
+            return max(salary) if salary else None
+        elif agg == 'min':
+            return min(salary) if salary else None
+        elif agg == 'avg':
+            return sum(salary) / len(salary) if salary else None
+        else:
+            return None
+    except Exception as e:
+        print(f"Error in extract_salary: {e}")
+        return None
+```
+
+#### Update `yoe_to_value` Function
+
+Add handling for `None` values in `yoe_to_value`:
+
+```python
+
+def yoe_to_value(yoe):
+    if not yoe or len(yoe) == 0:
+        return 0
+    try:
+        yoe_values = []
+        for y in yoe:
+            if y is None:
+                continue  # Skip None values
+            y = re.sub(r'[^A-Za-z0-9 ]+', '', y)
+            yoe_values += [int(val) for val in re.findall('1[012]|[1-9]', y)]
+        return max(yoe_values) if yoe_values else 0
+    except Exception as e:
+        print(f"Error in yoe_to_value: {e}")
+        return 0
+```
+
+#### Update `education_to_age` Function
+
+Handle `None` values in `education_to_age`:
+
+```python
+
+def education_to_age(ed):
+    if not ed:
+        return 21
+    try:
+        ed_ages = []
+        for e in ed:
+            if e is None:
+                continue  # Skip None values
+            if 'high school' in e.lower() or 'ged' in e.lower() or 'cssd' in e.lower() or 'hse' in e.lower():
+                ed_ages.append(19)
+            elif 'associate' in e.lower():
+                ed_ages.append(21)
+            elif 'bachelor' in e.lower() or 'college' in e.lower() or 'university' in e.lower():
+                ed_ages.append(23)
+            elif 'master' in e.lower() or 'mba' in e.lower():
+                ed_ages.append(26)
+            else:
+                ed_ages.append(30)
+        return max(ed_ages) if ed_ages else 21
+    except Exception as e:
+        print(f"Error in education_to_age: {e}")
+        return 21
+```
+
+#### Update `extract_degree` Function
+
+Ensure `None` handling in `extract_degree`:
+
+```python
+
+def extract_degree(job_description):
+    if not job_description:
+        return None
+    try:
+        pattern = broadcast_pattern.value  # Access the broadcasted pattern
+        match = re.search(pattern, job_description)
+        return match.group(0) if match else None
+    except Exception as e:
+        print(f"Error in extract_degree: {e}")
+        return None
+```
+
+#### Update `extract_years_of_experience` Function
+
+Check for `None` values in `extract_years_of_experience`:
+
+```python
+
+def extract_years_of_experience(job_description):
+    try:
+        if job_description:
+            match = re.search(yoe_pattern, job_description)
+            return match.group(0) if match else None
+        return None
+    except Exception as e:
+        print(f"Error in extract_years_of_experience: {e}")
+        return None
+```
+
+#### Update `convert_to_recode` Function
+
+Add handling for `None` in `convert_to_recode`:
+
+```python
+
+def convert_to_recode(code):
+    try:
+        if code is None:
+            return None
+        return naics_to_recode_dict.get(str(code), None)
+    except Exception as e:
+        print(f"Error in convert_to_recode: {e}")
+        return None
+```
+
+### 3\. Validate Column Data Types
+
+Ensure that the columns you are working with have appropriate data types. For example, if you expect a column to contain strings, ensure it does not contain unexpected data types like `float` or `None` which could lead to errors.
+
+### 4\. Dataframe Column Operations
+
+When applying UDFs on DataFrame columns, ensure that the columns exist and are not empty. For instance, in the lines involving `job_comp_code_df`, make sure that columns like `JOB_DESCRIPTION` and `NAICS_CODE` exist and contain valid values before applying UDFs.
+
+### 5\. Testing and Debugging
+
+*   Run the functions individually on test cases with known inputs, including edge cases like `None` or empty strings.
+*   Use `.show()` on intermediate steps in the DataFrame processing to inspect outputs and ensure the functions are behaving as expected.
+
+By implementing these updates, the code should handle `None` values gracefully, and reduce the likelihood of errors due to unexpected input.
 
 ### 6\. Use Exception Handling
 
