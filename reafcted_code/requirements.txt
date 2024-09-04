@@ -5,3 +5,4 @@ dask[distributed]==2023.5.0
 pydantic==2.2.1
 transformers==4.40.1
 safetensors
+hydra
