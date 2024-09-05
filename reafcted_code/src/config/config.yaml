@@ -1,0 +1,43 @@
+defaults:
+  - schema/snowflake  # Snowflake configuration
+  - queries: earnings_call  # This can be overridden dynamically
+  - dask: default  # Default Dask settings
+
+
+schema:
+  quant:
+    user: ${schema.snowflake.user}
+    password: ${schema.snowflake.password}
+    account: ${schema.snowflake.account}
+    warehouse: ${schema.snowflake.warehouse}
+    database: EDS_PROD
+    schema: QUANT
+  quant_stg:
+    user: ${schema.snowflake.user}
+    password: ${schema.snowflake.password}
+    account: ${schema.snowflake.account}
+    warehouse: ${schema.snowflake.warehouse}
+    database: EDS_PROD
+    schema: QUANT_STG
+  quant_live:
+    user: ${schema.snowflake.user}
+    password: ${schema.snowflake.password}
+    account: ${schema.snowflake.account}
+    warehouse: ${schema.snowflake.warehouse}
+    database: EDS_PROD
+    schema: QUANT_LIVE
+
+spacy:
+  model: "en_core_web_sm"  # You can switch between spaCy models
+  max_length: 1000000
+
+stopwords:
+  - "bottom"
+  - "top"
+  - "call"
+  - "down"
+
+text_processing:
+  n_gram_length: 2
+  custom_stopwords: ${stopwords}
+

@@ -1,0 +1,14 @@
+spacy:
+  model: "en_core_web_sm"  # SpaCy model to use (can be overridden for larger models)
+  chunk_size: 5000  # Chunk size to split large documents into smaller pieces
+  max_length: 1000000  # Max length setting for spaCy
+
+stopwords:
+  - "bottom"
+  - "top"
+  - "call"
+  - "down"
+
+text_processing:
+  n_gram_length: 2
+  custom_stopwords: ${stopwords}
