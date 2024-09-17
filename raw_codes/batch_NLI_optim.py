@@ -8,15 +8,27 @@ import ast
 
 
 #EDITED: Initialize Spark Session with GPU configurations
-spark = (SparkSession.builder 
-    .appName("OptimizedNLIProcessing") 
-    .config("spark.executor.resource.gpu.amount", "1")  
-    .config("spark.task.resource.gpu.amount", "1")       
-    .config("spark.sql.shuffle.partitions", "150")   
-    .config("spark.executor.memoryOverhead", "10g")  
-    .config("spark.dynamicAllocation.enabled", "true") 
-    .config("spark.dynamicAllocation.minExecutors", "1") 
-    .config("spark.dynamicAllocation.maxExecutors", "5") 
+spark = (SparkSession.builder
+    .appName("OptimizedNLIProcessing")
+    # Executor Configuration
+    .config("spark.executor.instances", "5")            # One executor per worker node
+    .config("spark.executor.cores", "5")                # 5 cores per executor
+    .config("spark.executor.memory", "90g")             # 90 GB RAM per executor
+    .config("spark.executor.memoryOverhead", "10g")     # 10 GB overhead per executor
+    # GPU Configuration
+    .config("spark.executor.resource.gpu.amount", "1")   # 1 GPU per executor
+    .config("spark.task.resource.gpu.amount", "1")       # 1 GPU per task
+    # Driver Configuration
+    .config("spark.driver.cores", "6")                   # 6 cores for driver
+    .config("spark.driver.memory", "90g")                # 90 GB RAM for driver
+    .config("spark.driver.memoryOverhead", "10g")        # 10 GB overhead for driver
+    # Shuffle and Parallelism
+    .config("spark.sql.shuffle.partitions", "100")       # 100 shuffle partitions
+    # Disable Dynamic Allocation
+    .config("spark.dynamicAllocation.enabled", "false")   # Fixed executors for GPU usage
+    # Additional Configurations
+    .config("spark.sql.legacy.setCommandRejectsSparkCoreConfs", "false")
+    .config("spark.rpc.message.maxSize", "1024")
     .getOrCreate())
 
 #EDITED: Set Spark configurations for optimized performance
