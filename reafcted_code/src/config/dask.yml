@@ -1,4 +1,0 @@
-dask:
-  npartitions: 8
-  dynamic_partitioning: true  # Enable dynamic partitioning
-  max_tasks: 64  # Maximum tasks if dynamic partitioning is disabled
