@@ -1,0 +1,16 @@
+pandas
+numpy
+dask
+pyarrow
+gensim
+spacy
+plotly
+umap-learn
+loguru
+hydra-core
+pytest
+pytest-mock
+pytest-cov
+black
+flake8
+pylint
