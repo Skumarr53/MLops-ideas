@@ -10,6 +10,14 @@ Welcome to Centralized NLP Package's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   data_access
+   embedding
+   pipelines
+   preprocessing
+   tutorials
+   usage_pipeline1
+   usage_pipeline2
+   visualization
 
 
 Indices and tables

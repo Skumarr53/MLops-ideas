@@ -32,10 +32,20 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
+    "sphinx.ext.autosummary",
+
 ]
+
+# autosummary_generate = True
+# pip install -e .
+
+
+# open _build/html/index.html
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+
 
 
 # -- Options for HTML output -------------------------------------------------

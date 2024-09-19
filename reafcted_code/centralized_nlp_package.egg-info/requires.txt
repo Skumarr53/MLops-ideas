@@ -1,0 +1,10 @@
+pandas
+numpy
+dask
+pyarrow
+gensim
+spacy
+plotly
+umap-learn
+loguru
+hydra-core
