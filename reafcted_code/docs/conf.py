@@ -61,6 +61,6 @@ html_css_files = [
     'custom.css',
 ]
 html_theme_options = {
-    "sidebar_hide_name": True,
+    "sidebar_hide_name": False,
     "navigation_with_keys": False,
 }

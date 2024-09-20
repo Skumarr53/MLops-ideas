@@ -7,7 +7,7 @@ body {
 }
 
 .sig.sig-object.py {
-    background-color: #a1d69e;
+    background-color: #a5d4a2;
     border-right: 1px solid #d3dce0;
 }
 
@@ -91,8 +91,8 @@ th {
 }
 
 /* Footer Customization */
-.wy-nav-footer {
-    background-color: #2a577f;
+.bottom-of-page {
+    background-color: #4e7ca4;
     color: white;
     padding: 10px 20px;
     text-align: center;
