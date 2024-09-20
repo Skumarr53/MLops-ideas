@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utilities &mdash; Centralized NLP Package 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=2389946f"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualization" href="visualization.html" />
+    <link rel="prev" title="Usage: Pipeline 2" href="usage_pipeline2.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Centralized NLP Package
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data_access.html">Data Access</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedding.html">Embedding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Config.dask"><code class="docutils literal notranslate"><span class="pre">Config.dask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Config.preprocessing"><code class="docutils literal notranslate"><span class="pre">Config.preprocessing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Config.snowflake"><code class="docutils literal notranslate"><span class="pre">Config.snowflake</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Config.word2vec"><code class="docutils literal notranslate"><span class="pre">Config.word2vec</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.config.DaskConfig"><code class="docutils literal notranslate"><span class="pre">DaskConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.DaskConfig.n_workers"><code class="docutils literal notranslate"><span class="pre">DaskConfig.n_workers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.config.PreprocessingConfig"><code class="docutils literal notranslate"><span class="pre">PreprocessingConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.PreprocessingConfig.additional_stop_words"><code class="docutils literal notranslate"><span class="pre">PreprocessingConfig.additional_stop_words</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.PreprocessingConfig.max_length"><code class="docutils literal notranslate"><span class="pre">PreprocessingConfig.max_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.PreprocessingConfig.spacy_model"><code class="docutils literal notranslate"><span class="pre">PreprocessingConfig.spacy_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig"><code class="docutils literal notranslate"><span class="pre">SnowflakeConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig.account"><code class="docutils literal notranslate"><span class="pre">SnowflakeConfig.account</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig.database"><code class="docutils literal notranslate"><span class="pre">SnowflakeConfig.database</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig.password"><code class="docutils literal notranslate"><span class="pre">SnowflakeConfig.password</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig.schema"><code class="docutils literal notranslate"><span class="pre">SnowflakeConfig.schema</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig.user"><code class="docutils literal notranslate"><span class="pre">SnowflakeConfig.user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig.warehouse"><code class="docutils literal notranslate"><span class="pre">SnowflakeConfig.warehouse</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.bigram_threshold"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.bigram_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.epochs"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.epochs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.gen_bigram"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.gen_bigram</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.min_count"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.min_count</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.model_save_path"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.model_save_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.vector_size"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.vector_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.window"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.window</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig.workers"><code class="docutils literal notranslate"><span class="pre">Word2VecConfig.workers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.config.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.logging_setup.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.helpers.construct_model_save_path"><code class="docutils literal notranslate"><span class="pre">construct_model_save_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#centralized_nlp_package.utils.helpers.format_date"><code class="docutils literal notranslate"><span class="pre">format_date()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Centralized NLP Package</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-centralized_nlp_package.utils.config">
+<span id="utilities"></span><h1>Utilities<a class="headerlink" href="#module-centralized_nlp_package.utils.config" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snowflake</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SnowflakeConfig(user='???',</span> <span class="pre">password='???',</span> <span class="pre">account='???',</span> <span class="pre">warehouse='???',</span> <span class="pre">database='???',</span> <span class="pre">schema='???')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DaskConfig(n_workers=32)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word2vec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Word2VecConfig(vector_size=300,</span> <span class="pre">window=5,</span> <span class="pre">min_count=10,</span> <span class="pre">workers=16,</span> <span class="pre">epochs=15,</span> <span class="pre">gen_bigram=False,</span> <span class="pre">bigram_threshold=2,</span> <span class="pre">model_save_path='path/to/save/model/{min_year}_{min_month}_{max_year}_{max_month}_v1.model')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PreprocessingConfig(spacy_model='en_core_web_sm',</span> <span class="pre">additional_stop_words=['bottom',</span> <span class="pre">'top',</span> <span class="pre">'call'],</span> <span class="pre">max_length=1000000000)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.config.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Config.dask">
+<span class="sig-name descname"><span class="pre">dask</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#centralized_nlp_package.utils.config.DaskConfig" title="centralized_nlp_package.utils.config.DaskConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaskConfig</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">DaskConfig(n_workers=32)</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Config.dask" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Config.preprocessing">
+<span class="sig-name descname"><span class="pre">preprocessing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#centralized_nlp_package.utils.config.PreprocessingConfig" title="centralized_nlp_package.utils.config.PreprocessingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreprocessingConfig</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PreprocessingConfig(spacy_model='en_core_web_sm',</span> <span class="pre">additional_stop_words=['bottom',</span> <span class="pre">'top',</span> <span class="pre">'call'],</span> <span class="pre">max_length=1000000000)</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Config.preprocessing" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Config.snowflake">
+<span class="sig-name descname"><span class="pre">snowflake</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#centralized_nlp_package.utils.config.SnowflakeConfig" title="centralized_nlp_package.utils.config.SnowflakeConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnowflakeConfig</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">SnowflakeConfig(user='???',</span> <span class="pre">password='???',</span> <span class="pre">account='???',</span> <span class="pre">warehouse='???',</span> <span class="pre">database='???',</span> <span class="pre">schema='???')</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Config.snowflake" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Config.word2vec">
+<span class="sig-name descname"><span class="pre">word2vec</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#centralized_nlp_package.utils.config.Word2VecConfig" title="centralized_nlp_package.utils.config.Word2VecConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">Word2VecConfig</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Word2VecConfig(vector_size=300,</span> <span class="pre">window=5,</span> <span class="pre">min_count=10,</span> <span class="pre">workers=16,</span> <span class="pre">epochs=15,</span> <span class="pre">gen_bigram=False,</span> <span class="pre">bigram_threshold=2,</span> <span class="pre">model_save_path='path/to/save/model/{min_year}_{min_month}_{max_year}_{max_month}_v1.model')</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Config.word2vec" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.DaskConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.config.</span></span><span class="sig-name descname"><span class="pre">DaskConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/config.html#DaskConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.config.DaskConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.DaskConfig.n_workers">
+<span class="sig-name descname"><span class="pre">n_workers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.DaskConfig.n_workers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.PreprocessingConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.config.</span></span><span class="sig-name descname"><span class="pre">PreprocessingConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spacy_model='en_core_web_sm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_stop_words=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_length=1000000000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/config.html#PreprocessingConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.config.PreprocessingConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.PreprocessingConfig.additional_stop_words">
+<span class="sig-name descname"><span class="pre">additional_stop_words</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.PreprocessingConfig.additional_stop_words" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.PreprocessingConfig.max_length">
+<span class="sig-name descname"><span class="pre">max_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000000000</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.PreprocessingConfig.max_length" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.PreprocessingConfig.spacy_model">
+<span class="sig-name descname"><span class="pre">spacy_model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'en_core_web_sm'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.PreprocessingConfig.spacy_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.SnowflakeConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.config.</span></span><span class="sig-name descname"><span class="pre">SnowflakeConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'???'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'???'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'???'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warehouse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'???'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'???'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'???'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/config.html#SnowflakeConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.config.SnowflakeConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.SnowflakeConfig.account">
+<span class="sig-name descname"><span class="pre">account</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'???'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.SnowflakeConfig.account" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.SnowflakeConfig.database">
+<span class="sig-name descname"><span class="pre">database</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'???'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.SnowflakeConfig.database" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.SnowflakeConfig.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'???'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.SnowflakeConfig.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.SnowflakeConfig.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'???'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.SnowflakeConfig.schema" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.SnowflakeConfig.user">
+<span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'???'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.SnowflakeConfig.user" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.SnowflakeConfig.warehouse">
+<span class="sig-name descname"><span class="pre">warehouse</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'???'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.SnowflakeConfig.warehouse" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.config.</span></span><span class="sig-name descname"><span class="pre">Word2VecConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_bigram</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bigram_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'path/to/save/model/{min_year}_{min_month}_{max_year}_{max_month}_v1.model'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/config.html#Word2VecConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.bigram_threshold">
+<span class="sig-name descname"><span class="pre">bigram_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.bigram_threshold" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.epochs">
+<span class="sig-name descname"><span class="pre">epochs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.epochs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.gen_bigram">
+<span class="sig-name descname"><span class="pre">gen_bigram</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.gen_bigram" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.min_count">
+<span class="sig-name descname"><span class="pre">min_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.min_count" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.model_save_path">
+<span class="sig-name descname"><span class="pre">model_save_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'path/to/save/model/{min_year}_{min_month}_{max_year}_{max_month}_v1.model'</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.model_save_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.vector_size">
+<span class="sig-name descname"><span class="pre">vector_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.vector_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.window">
+<span class="sig-name descname"><span class="pre">window</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.window" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.Word2VecConfig.workers">
+<span class="sig-name descname"><span class="pre">workers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#centralized_nlp_package.utils.config.Word2VecConfig.workers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.config.get_config">
+<span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.config.</span></span><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../configs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/config.html#get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.config.get_config" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the Hydra configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_path</strong> (<em>str</em>) – Path to the configuration directory.</p></li>
+<li><p><strong>config_name</strong> (<em>str</em>) – Name of the main configuration file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Configuration object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#centralized_nlp_package.utils.config.Config" title="centralized_nlp_package.utils.config.Config">Config</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-centralized_nlp_package.utils.logging_setup"></span><dl class="py function">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.logging_setup.setup_logging">
+<span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.logging_setup.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/logging_setup.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.logging_setup.setup_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Configures Loguru logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>log_level</strong> (<em>str</em>) – Logging level (e.g., “INFO”, “DEBUG”).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-centralized_nlp_package.utils.helpers"></span><dl class="py function">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.helpers.construct_model_save_path">
+<span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.helpers.</span></span><span class="sig-name descname"><span class="pre">construct_model_save_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_month</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_month</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/helpers.html#construct_model_save_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.helpers.construct_model_save_path" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs the model save path using the provided template and date components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template</strong> (<em>str</em>) – Template string with placeholders.</p></li>
+<li><p><strong>min_year</strong> (<em>str</em>) – Minimum year.</p></li>
+<li><p><strong>min_month</strong> (<em>str</em>) – Minimum month.</p></li>
+<li><p><strong>max_year</strong> (<em>str</em>) – Maximum year.</p></li>
+<li><p><strong>max_month</strong> (<em>str</em>) – Maximum month.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Constructed file path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="centralized_nlp_package.utils.helpers.format_date">
+<span class="sig-prename descclassname"><span class="pre">centralized_nlp_package.utils.helpers.</span></span><span class="sig-name descname"><span class="pre">format_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/centralized_nlp_package/utils/helpers.html#format_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#centralized_nlp_package.utils.helpers.format_date" title="Permalink to this definition"></a></dt>
+<dd><p>Formats a datetime object to ‘YYYY-MM-DD’ string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>date</strong> (<em>datetime</em>) – The date to format.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted date string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage_pipeline2.html" class="btn btn-neutral float-left" title="Usage: Pipeline 2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="visualization.html" class="btn btn-neutral float-right" title="Visualization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Santhosh Kumar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -32,7 +32,11 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
-    "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.autosectionlabel",
+    # "sphinx-search.extension"
+    # "sphinx.ext.autosummary",
 
 ]
 
