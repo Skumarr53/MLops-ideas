@@ -1,6 +1,0 @@
-﻿centralized\_nlp\_package.data\_access.snowflake\_utils.read\_from\_snowflake
-=============================================================================
-
-.. currentmodule:: centralized_nlp_package.data_access.snowflake_utils
-
-.. autofunction:: read_from_snowflake
