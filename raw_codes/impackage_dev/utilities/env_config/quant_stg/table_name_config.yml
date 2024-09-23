@@ -1,0 +1,6 @@
+CT_parsed_daily_table: CTS_PARSED_D
+CT_legacy_daily_table: CTS_LEGACY_NLP_D
+CT_sentiment_daily_table: CTS_FUND_COMBINED_SCORES_D
+CT_parsed_historical_table: CTS_PARSED_H
+CT_legacy_historical_table: CTS_LEGACY_NLP_H
+CT_sentiment_historical_table: CTS_FUND_COMBINED_SCORES_H

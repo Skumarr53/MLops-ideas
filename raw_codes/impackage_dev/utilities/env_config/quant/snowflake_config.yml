@@ -1,0 +1,16 @@
+eds_db_prod: EDS_PROD
+eds_dly_factset_prod: EDS_DLY_FACTSET_PROD
+schema: QUANT
+cts_schema: TRANSCRIPTS
+snowflake_cred_pkl_file: mysf_prod_quant_dev_new.pkl
+voyatest_snowflake_nonprod: voyatest.east-us-2.privatelink.snowflakecomputing.com
+voyatest_snowflake_prod: voya.east-us-2.privatelink.snowflakecomputing.com
+credentials_file: cred.ini
+FILT_labels:
+  FILT_MD: MGNT_DISCUSSION
+  FILT_QA: QA_SECTION
+  FILT_CEO_MD: CEO_DISCUSSION
+  FILT_CEO_QA: CEO_ANS
+  FILT_EXEC_MD: EXEC_DISCUSSION
+  FILT_EXEC_QA: EXEC_ANS
+  FILT_ANL_QA: ANALYST_QS

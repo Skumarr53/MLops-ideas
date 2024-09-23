@@ -1,0 +1,6 @@
+kvConfig: '{env}/key_config.yml'
+SnowFlakeConfig: '{env}/snowflake_config.yml'
+MLflowConfig: '{env}/model_config.yml'
+FilePathConfig: '{env}/path_config.yml'
+TableNameConfig: '{env}/table_name_config.yml'
+TableColNameConfig: '{env}/table_col_name_config.yml'

@@ -1,0 +1,15 @@
+mlflow_stages_dict:
+  Quant: None
+  Quant_Stg: Staging
+  Quant_Live: Production
+
+mlflow_transition_dict:
+  Quant_Stg: None
+  Quant_Live: Staging
+
+mlflow_model_tag_key: deployment_env
+mlflow_FINBERT_model_name: finbert-better-transformer-sentiment-classification_model
+finbert_model_path: /dbfs/mnt/access_work/data-science-nlp-ml-common-code/models/finbert_mlflow/logged_model/
+finbert_experiment_name: /dbfs/mnt/access_work/data-science-nlp-ml-common-code/models/finbert_mlflow/run_experiment/
+finbert_run_name: finbert_better_transformer_run
+finbert_registered_model_name: finbert_better_transformer_model
