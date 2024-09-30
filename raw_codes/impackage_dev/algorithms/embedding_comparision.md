@@ -7,7 +7,7 @@ from pyspark.sql.types import DoubleType
 def compare_embeddings(df1, df2, id_col='ENTITY_ID', emb_col='EMBEDDING'):
     # Rename embedding columns
     df1 = df1.select(id_col, F.col(emb_col).alias('embedding1'))
-    df2 = df2.select(id_col, F.col(emb_col).alias('embedding2'))
+    df2 = df2.select(id_col, F.col(emb_col).alias('embedding2')) #
     
     # Join DataFrames on ENTITY_ID
     joined = df1.join(df2, on=id_col)
