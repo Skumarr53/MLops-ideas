@@ -35,4 +35,4 @@ class DateUtility:
         # Max date is always the start of the current month
         max_date = f"{end_date.year}-{end_date.month:02d}-01"
 
-        return f"'{min_date}'", f"'{max_date}'"
+        return min_date, max_date
