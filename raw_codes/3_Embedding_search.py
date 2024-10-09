@@ -158,7 +158,9 @@ def umap_viz(df, marker_size = None, save_to = None):
     fig.write_html(save_to)
   fig.show()
   
-  
+  # Load Word2Vec model and seed list
+model = Word2Vec.load(dbutils.widgets.get("Model path"))
+seed = pd.read_csv(dbutils.widgets.get("Seed list path"))
 
   # Embed seed words and set 'seed' flag = True, output seed viz.
 seed['embed'] = seed['match'].apply(lambda x: embed(x, model))
@@ -183,3 +185,16 @@ if len(seed.index) >=8:
     processed_df = ddf.compute()
     self.sparkdf_util.cleanup(ddf)
     return  processed_df #processed_df
+  
+
+search = nearest(seed, model, regularize = True)
+search['seed'] = False
+
+exp = pd.concat([search, seed])
+exp.reset_index(inplace = True)
+exp.drop('index', axis = 1, inplace = True)
+
+
+# Save expanded word list
+exp.drop(['embed', 'x', 'y'], axis = 1, inplace = True)
+exp.to_csv(dbutils.widgets.get('Output list path'))
