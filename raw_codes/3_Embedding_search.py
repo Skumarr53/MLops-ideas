@@ -13,6 +13,10 @@ import plotly.express as px
 from gensim.models import Phrases
 from collections import Counter
 
+# Output list path: /dbfs/mnt/access_work/UC25/Embeddings/Output Word lists/union_expanded_word_list.csv
+# seed list: /dbfs/mnt/access_work/UC25/Embeddings/Word lists/union_test_list_v3.csv
+# model path: /dbfs/mnt/access_work/UC25/Topic Modeling/Embedding/word2vec_DATM_19_01_23_12_v1.model
+# num_neighbours: 50
 
 nlp = spacy.load("en_core_web_sm", disable = ['parser'])
 
