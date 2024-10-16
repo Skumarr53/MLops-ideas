@@ -193,3 +193,14 @@ class TokenInjection:
       print(f"Failed to create DataFrame: {e}")
       raise
 ```
+
+---------
+few updates:
+
+Yesterday, I discussed the instructor embedding with MJ. I made changes to the code and tested it today. Let’s monitor the results this week. We can schedule a call with Ops next Monday or later.
+
+I set up a call with the DevOps team today at 7:30 to discuss the repository upgrade and enabling GitHub Pages features. I received two replies indicating that they are on medical leave.
+
+The issue with the inference results has been resolved, and I’ve tested the changes for NLI optimization. Yesterday, I shared the updates with Yujing, along with the test results, and she is currently validating them.
+
+Regarding topic modeling, I created a branch for a documentation dummy repository and staged all the common NLP package code in it. I'm currently testing the modules.
