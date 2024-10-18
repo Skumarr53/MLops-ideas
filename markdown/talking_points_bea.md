@@ -197,10 +197,10 @@ class TokenInjection:
 ---------
 few updates:
 
-Yesterday, I discussed the instructor embedding with MJ. I made changes to the code and tested it today. Let’s monitor the results this week. We can schedule a call with Ops next Monday or later.
+- Yesterday, I discussed the instructor embedding fix with MJ. I implemented the changes that he suggested to the code and tested it today. in today ru  we are getting more counts than usaual. Let’s monitor the results this week. We can schedule a call with Ops next week Monday or later.
 
-I set up a call with the DevOps team today at 7:30 to discuss the repository upgrade and enabling GitHub Pages features. I received two replies indicating that they are on medical leave.
+- I set up a call with the DevOps team today at 7:30 to discuss the repository upgrade and enabling GitHub Pages features. I received  replies two members of team saying that they are on medical leave. Lets say 
+- Regarding topic modeling, I created a branch for a documentation dummy repository and staged all the common NLP package code in it. I'm currently testing the modules. anish 
 
-The issue with the inference results has been resolved, and I’ve tested the changes for NLI optimization. Yesterday, I shared the updates with Yujing, along with the test results, and she is currently validating them.
+- The issue with the inference results has been resolved, and I’ve tested the changes for NLI optimization. Yesterday, I shared the updates with Yujing, along with the test results, and she is currently validating them.
 
-Regarding topic modeling, I created a branch for a documentation dummy repository and staged all the common NLP package code in it. I'm currently testing the modules.
