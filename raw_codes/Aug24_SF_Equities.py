@@ -273,6 +273,8 @@ for label, section in {'FILT_MD': 'FILT_MD', 'FILT_QA': 'FILT_QA'}.items():
 
   currdf['matches_' + label] = currdf[section].apply(lambda x: match_count_lowStat(x, word_set_dict, suppress = negate_dict), meta = ('matches_' + label, object))
 
+
+
   # Running Dask compute
 with ProgressBar():
   currdf = currdf.compute()
@@ -326,7 +328,7 @@ concatdf.drop(['index'], axis = 1, inplace = True)
 
 concatdf = concatdf[(concatdf['RECOVERY_REL_FILT_MD']>0) | (concatdf['CYCLE_REL_FILT_MD']>0) | (concatdf['S&D_REL_FILT_MD']>0)]
 
-
+2
 # Function to switch dictionary key-value pairs and check if values>0
 def simpDict(x):
  # print(type(x))
