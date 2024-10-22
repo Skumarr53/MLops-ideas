@@ -394,3 +394,6 @@ new_sf.schema = 'QUANT'
  
 tablename_curr = 'PARTHA_SF_REPORT_CTS_STG_1'
 result_curr = new_sf.write_to_snowflake_table(spark_parsedDF, tablename_curr)
+
+
+
