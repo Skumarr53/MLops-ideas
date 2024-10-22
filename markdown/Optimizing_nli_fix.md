@@ -1,13 +1,22 @@
+
+
+
 The process begins by extracting call transcript data from a Snowflake database and preprocessing it using PySpark to prepare the text for analysis. It then employs a BERT-based Natural Language Inference model to classify each sentence into predefined categories, such as consumer strengths, weaknesses, and spending patterns. After performing the inference, the results are post-processed to aggregate scores and counts, ensuring balanced workload distribution and efficient resource utilization across the cluster. Finally, the summarized insights are written back to Snowflake, enabling stakeholders to leverage the analyzed data for informed business decisions.
+
+
 
 Certainly! Below are the condensed explanations and additional information as per your requests:
 
 * * *
 
+I go through the enhancement I have done to improve its performance
+
 **1 Data Storage and Processing: Transition from Pandas to PySpark**
 ----------------------------------------------------------------------
 
-By shifting from a Pandas DataFrame to a PySpark DataFrame, you leveraged PySpark's distributed computing capabilities, enabling parallel processing across multiple nodes in the Databricks cluster. This transition not only enhances scalability for handling larger datasets but also significantly reduces processing time by utilizing Spark's optimized execution engine and Catalyst optimizer. Additionally, PySpark's seamless integration with Databricks allows for efficient memory management and resource utilization, resulting in a more performant and robust NLI pipeline.
+Earlier entire processing was done using pandas 
+
+By shifting from a Pandas DataFrame to a PySpark DataFrame, you leveraged PySpark's distributed computing capabilities, enabling parallel processing taking full adv multiple nodes in the Databricks cluster. This transition not only enhances scalability for handling larger datasets but also significantly reduces processing time by utilizing Spark's optimized execution engine and Catalyst optimizer. Additionally, PySpark's seamless integration with Databricks allows for efficient memory management and resource utilization, resulting in a more performant and robust NLI pipeline.
 
 * * *
 
@@ -17,11 +26,12 @@ By shifting from a Pandas DataFrame to a PySpark DataFrame, you leveraged PySpar
 **Partitions** are fundamental units of data distribution in distributed computing frameworks like PySpark. When a DataFrame is partitioned, it is divided into smaller, manageable chunks that can be processed concurrently across different nodes in a cluster. Each partition is handled by a separate executor, allowing parallel execution of tasks. This division enables efficient utilization of cluster resources, reduces processing time, and enhances scalability. Properly managing the number and size of partitions is crucial to avoid data skew and ensure balanced workloads, which in turn optimizes the overall performance of distributed computations.
 
 * * *
+A User-Defined Function (UDF) in Spark allows users to define custom functions to apply on DataFrame columns, enabling complex transformations that aren't supported by Spark's built-in functions. UDFs are useful for extending Spark's capabilities by incorporating custom logic
 
 **3 Using PySpark UDFs: Leveraging Distributed Execution**
 ------------------------------------------------------------
 
-Transitioning from Pandas' `apply` method to PySpark's `pandas_udf` (Pandas User Defined Functions) allows for parallel execution of functions across Spark's distributed environment. While the `apply` method processes data sequentially on a single machine, `pandas_udf` enables vectorized operations that run concurrently on multiple partitions, significantly speeding up computations. A `pandas_udf` integrates seamlessly with Spark's Catalyst optimizer and utilizes Apache Arrow for efficient data serialization between JVM and Python, providing both performance gains and scalability. This makes `pandas_udf` a superior choice for handling large-scale data transformations and model inferences in a distributed context.
+ealrier pipeline uses from Pandas' `apply` method to PySpark's `pandas_udf` (Pandas User Defined Functions) allows for parallel execution of functions across Spark's distributed environment. While the `apply` method processes data sequentially on a single machine, `pandas_udf` enables vectorized operations that run concurrently on multiple partitions, significantly speeding up computations. A `pandas_udf` integrates seamlessly with Spark's Catalyst optimizer and utilizes Apache Arrow for efficient data serialization between JVM and Python, providing both performance gains and scalability. This makes `pandas_udf` a superior choice for handling large-scale data transformations and model inferences in a distributed context.
 
 * * *
 
