@@ -1,4 +1,10 @@
 
+sfUtils = sc._jvm.net.snowflake.spark.snowflake.Utils
+sc = spark.sparkContext
+sc._jvm.net.snowflake.spark.snowflake.SnowflakeConnectorUtils.enablePushdownSession(sc._jvm.org.apache.spark.sql.SparkSession.builder().getOrCreate())
+zone = sc._jvm.java.util.TimeZone
+zone.setDefault(sc._jvm.java.util.TimeZone.getTimeZone("UTC"))
+
 class SnowFlakeDBUtilityCTS:
 
   def __init__(self, schema, srcdbname):
