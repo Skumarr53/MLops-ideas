@@ -262,3 +262,16 @@ By considering these recommendations, you can further optimize your pipeline's p
 * * *
 
 Congratulations again on the successful optimization of your NLI pipeline! If you have any more questions or need further assistance, feel free to ask.
+
+
+I have scheduled this brief call to discuss the queries around integration of the new Snowflake authentication for the call transcript pipeline. Since the pipeline is maintained by the Ops team, establish a plan for take this forward and ensure is everyone i aligne d the integration process.
+- who will be integrating authentication your team will work on this or we have it pick that up.
+- 
+
+
+
+
+
+- Right now I am wot=rking snowflake auth intgration into several pipelines since this is priority.
+- On the topic modelling side. I working on dcocumnetaion settng up I amde the changes as suggested by suresh.
+- once this is setup I will follow similar topic modelling config 
