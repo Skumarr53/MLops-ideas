@@ -269,3 +269,7 @@ If you decide to proceed with a single-node setup for debugging, follow these st
 Transitioning to a single-node setup on Databricks for debugging purposes can significantly simplify log management and streamline the debugging process. However, it's essential to complement this approach with enhanced logging strategies and comprehensive testing to ensure that your pipeline remains scalable and robust in a distributed environment. By balancing local development with controlled testing on Databricks, and utilizing the platform's built-in monitoring and diagnostic tools, you can effectively debug and optimize your GPU-intensive NLI inference pipeline.
 
 Feel free to reach out if you need further assistance with specific configurations or encounter additional challenges during this process. Happy debugging!
+
+
+
+Hi Sunil, I've moved the common code changes related to the new Snowflake authentication and call transcripts pipelines to the quant_stg environment after testing them in the quant environment. I then executed the call transcript in the staging environment, and it was successful. Should I proceed with moving the changes to the live environment, or Should I wait  for you to test the changes on your end in ADF. 
