@@ -272,4 +272,4 @@ Feel free to reach out if you need further assistance with specific configuratio
 
 
 
-Hi Sunil, I've moved the common code changes related to the new Snowflake authentication and call transcripts pipelines to the quant_stg environment after testing them in the quant environment. I then executed the call transcript in the staging environment, and it was successful. Should I proceed with moving the changes to the live environment, or Should I wait  for you to test the changes on your end in ADF. 
+
