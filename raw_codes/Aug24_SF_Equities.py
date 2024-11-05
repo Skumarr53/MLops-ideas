@@ -369,6 +369,8 @@ def equivalent_type(string, f):
 
 # Given pandas dataframe, it will return a spark's dataframe.
 def pandas_to_spark(pandas_df):
+/*************  ✨ Codeium Command ⭐  *************/
+/******  6b1508a8-156e-4ed4-a4d0-2aeb0657ad40  *******/
     columns = list(pandas_df.columns)
     types = list(pandas_df.dtypes)
     struct_list = []
