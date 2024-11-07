@@ -650,3 +650,23 @@ def _mp_fn(index):
 
 if __name__ == "__main__":
     main()
+    
+# ```
+# %sh
+
+# export TASK_NAME=mnli
+# python run_glue.py \
+#   --model_name_or_path "/dbfs/mnt/access_work/UC25/Libraries/HuggingFace/deberta-v3-large-zeroshot-v2" \
+#   --output_dir "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/Fine-tune NLI models/trained_RD_deberta-v3-large-zeroshot-v2_v5" \
+#   --train_file "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/NLI_role_training_data/Role_FT_train_v5_11012024.csv" \
+#   --validation_file "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/NLI_role_training_data/Role_FT_test_v5_11012024.csv" \
+#   --do_train \
+#   --do_eval \
+#   --num_train_epochs 3 \
+#   --fp16 \
+#   --report_to "none" \
+#   --learning_rate 2e-5 \
+#   --weight_decay 0.01 \
+#   --per_device_train_batch_size 16 \
+#   --per_device_eval_batch_size 16 
+# ````

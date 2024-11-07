@@ -271,5 +271,27 @@ Transitioning to a single-node setup on Databricks for debugging purposes can si
 Feel free to reach out if you need further assistance with specific configurations or encounter additional challenges during this process. Happy debugging!
 
 
+Updates:
 
+- I've moved the new Snowflake authentication changes to quant_live, and all my pipeline changes look good. I checked today's call transcript job run, and it was successful. I also conducted a trial run for the company similarity pipelines.
+- Regarding topic modeling refactoring, the topic modeling pipeline code is complete. I'm currently refactoring the NLI inference code, which is the last part, and it should be finished by tomorrow. After that, I'll start with documentation setup and testing.
+- I reviewed the document you shared, and the ML flow part of the DevOps flow looks good to me.
+- I have a question regarding the East 1 migration. I haven't gone through the recording yet as I was occupied with other tasks, but I plan to do it tomorrow. Is the East 1 workspace open for testing? If not, do you have a timeline for when it will be available?
+
+
+I have a few points to discuss regarding feedback:
+
+ - I've had no issues working with you. You've been supportive and have done everything possible from your end whenever I encountered technical blockers.
+ - I recall a couple of instances. One time, I mentioned that I wouldn't be able to attend a meeting because I needed to leave early for personal reasons. However, it seems there was a misunderstanding, and I believe you escalated the issue to the India team. This situation could have been handled a bit better, perhaps by discussing it with me first to understand the reason.
+
+Lets say we have 3 envs for develpoment, stging and prod. If we were to do limited release which is not production code. It does not make sense to put it in 
+
+
+Hi steve, Can you check you whther LLMs calls got uploaded in the today run. I requestin gto check coz today job failed due to some databricks cluster resource quota exceed issue, I had to manually there is 2 hous delay from regular schedule. Can you please check if it calls is loaded properly in for pipeline.     
+
+
+
+Hi Steve, could you check whether the LLM calls were uploaded in today's run? I'm asking because today's job failed due to a Databricks cluster resource quota issue and I had to handle it manually later which caused a two-hour delay from the regular schedule. so could you please verify if the calls were loaded correctly into the pipeline?
+
+Hi Steve, could you verify whether the LLM calls were uploaded in today's run on your end? I'm asking because today's job failed due to a Databricks cluster resource quota issue and I had to run job manually later, resulting in a two-hour delay from the regular schedule. Could you please confirm if the calls were loaded correctly in your job run?
 
