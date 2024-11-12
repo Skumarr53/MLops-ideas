@@ -44,6 +44,7 @@ BATCH_SIZE = 32  # Adjust based on GPU memory and performance
 
 # Function to parse JSON strings to lists
 def parse_json_list(s):
+    
     try:
         return json.loads(s)
     except Exception as e:
