@@ -478,6 +478,7 @@ for col_name in qa_final_score_extracted_cols:
 
 # COMMAND ----------
 
+#def: convert_column_types
 # Drop the intermediate columns
 currdf_spark = currdf_spark.drop('MD_FINAL_SCORE_EXTRACTED', 'QA_FINAL_SCORE_EXTRACTED')
 
@@ -569,6 +570,9 @@ def extract_matched_sentences(sentences, matches):
 
 extract_udf = udf(extract_matched_sentences, ArrayType(StringType()))
 
+
+
+# def apply_extract_udf_sections
 # Get all columns that match the pattern "_TOTAL_FILT_MD" or "_TOTAL_FILT_QA"
 patterns = [re.compile(r".*_TOTAL_FILT_MD"), re.compile(r".*_TOTAL_FILT_QA")]
 matched_columns = [col for col in currdf_spark.columns if any(pattern.match(col) for pattern in patterns)]
@@ -585,7 +589,7 @@ for col_name in matched_columns:
 
 # COMMAND ----------
 
-  columns_order = ['ENTITY_ID', 'CALL_ID', 'VERSION_ID', 'DATE', 'CALL_NAME',
+columns_order = ['ENTITY_ID', 'CALL_ID', 'VERSION_ID', 'DATE', 'CALL_NAME',
        'COMPANY_NAME', 'LEN_FILT_MD', 'LEN_FILT_QA', 'FILT_MD', 'FILT_QA',
        'CONSUMER_STRENGTH_COUNT_FILT_MD', 'CONSUMER_STRENGTH_REL_FILT_MD',
        'CONSUMER_STRENGTH_SCORE_FILT_MD', 'CONSUMER_STRENGTH_TOTAL_FILT_MD', 'CONSUMER_STRENGTH_EXTRACT_FILT_MD',

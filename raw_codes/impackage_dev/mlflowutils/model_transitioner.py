@@ -45,5 +45,3 @@ class ModelTransitioner(ModelMetaData):
       else:
         raise Exception("model is not present in {0} environment".format(self.from_env))
       return True
-
-  

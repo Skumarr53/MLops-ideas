@@ -204,3 +204,12 @@ few updates:
 
 - The issue with the inference results has been resolved, and I’ve tested the changes for NLI optimization. Yesterday, I shared the updates with Yujing, along with the test results, and she is currently validating them.
 
+
+
+--------------
+
+rephrase 
+- Topic modelling part I am working on setting up documentation for the package, It almost done it should ready be tommorrow.  
+- I am workign on testing part for topic modelling code  
+- NLI model finetuning and inference refactoring is complete I will connect with yujing to get it reviewed. Also, I will get detail on the models details she is building  
+- I will work on packaging part, dependency management and creting CI/CD pipiline
