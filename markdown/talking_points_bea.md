@@ -211,5 +211,20 @@ few updates:
 rephrase 
 - Topic modelling part I am working on setting up documentation for the package, It almost done it should ready be tommorrow.  
 - I am workign on testing part for topic modelling code  
-- NLI model finetuning and inference refactoring is complete I will connect with yujing to get it reviewed. Also, I will get detail on the models details she is building  
+- NLI model finetuning and inference refactoring is complete I will connect with yujing to get it reviewed. Also, I will get detail on the models details she is building.
 - I will work on packaging part, dependency management and creting CI/CD pipiline
+
+
+Requirements for Setting Up New Branch for Limited Release on East1
+
+Hi Naresh,
+
+We are setting up a new branch for the limited release, named quant_lr. Here are the requirements for the new environment in the East1 region:
+
+1. Workspace Mapping: Map this new branch to the acceptance workspace in East1, alongside the quant_stg branch (staging environment).
+2. New Schema: Create a new schema for the limited release on Snowflake, including the necessary role configuration. The quant_stg role should be applicable here as well.
+3. Blob Container: Set up an additional blob container for storing limited release artifacts.
+   
+Could you please look into this? Let me know if you need any further details.
+
+
