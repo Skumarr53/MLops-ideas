@@ -13,7 +13,11 @@
 *   **Automation vs. Manual**:
     *   **Manual Transition**: You can use the MLflow Model Registry interface within Databricks to manually promote models between stages (e.g., from staging to production).
     *   **Automated Transition**: Alternatively, you can incorporate transition steps into your training scripts or Databricks Jobs to automate the process based on predefined criteria.
-
+black = "^23.1.0"
+flake8 = "^6.0.0"
+mypy = "^1.5.0"
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
 ### **4\. Comparing Existing Model with New Model**
 
 *   **Comparison Methods**:
