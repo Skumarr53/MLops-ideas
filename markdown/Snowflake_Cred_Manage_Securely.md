@@ -188,3 +188,6 @@ def with_spark_session(func):
         return func(*args, **kwargs)
     return wrapper
 ```
+
+      self.snowflake_service_id = "SA_EDS_PROD_QUANT"
+      self.snowflake_role = "ROLE_EDS_PROD_DDLADMIN_QUANT"
