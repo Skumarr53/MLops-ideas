@@ -1967,3 +1967,29 @@ This modular approach enhances code readability, reusability, and maintainabilit
 The provided standalone function-based setup effectively automates the MLflow workflow for your NLI use case, ensuring smooth transitions from development to staging and finally to production based on defined performance metrics. By following this structured approach, you can maintain a robust and scalable machine learning pipeline within Databricks, leveraging MLflow's powerful tracking and model management capabilities.
 
 Feel free to adjust and extend the functions to better fit your specific infrastructure and requirements.
+
+
+What does this do 
+run_id = run.info.run_id
+
+# Register the model
+model_name = "DeBERTa_v3_NLI_Model"
+model_uri = f"runs:/{run_id}/model"
+mlflow.register_model(model_uri, model_name)
+
+if run has mupltile fintued multiple hyperparameter set how does it handle
+
+
+In the development of the topic modeling package, 
+ - I am have integrated the NLI fine-tuning module into the common nlp package and refactoring the NLI inference processing workflow for topic modeling use cases. 
+ - The documentation setup for the topic modeling package is complete. I work with with Suresh from the DevOps team to host this documentation on GitHub Pages. Unfortunately, I haven't been able to do this toda yet because I've been occupied with testing the MLflow setup. Once the documentation is ready and hosted, I will share it with the team. 
+ 
+ - Currently, my focus is on testing the MLflow setup specifically for the NLI model. 
+ - I will cretae 
+
+
+
+
+I had couple questions revolving around snowflake
+
+Somenath mentioned that I won't be receiving a permanent ID card as i am a contract employee. He suggested I check with you about obtaining an access card for easier entry. Otherwise, I'll need to get a temporary ID card each time I visit the office and return it when I leave, which is quite inconvenient. Could it be possible to arrange an access card for me?
