@@ -250,3 +250,5 @@ I have a few topics to discuss:
 - I have a suggestion regarding MLflow. Instead of logging different base models into the same experiment, why not maintain separate experiments and register the models in the same model registry? This approach would allow us to compare models in the registry that come from different experiments. For instance, if we are comparing different versions of the same base model, like DeBERTa small and large, we can include them in the same experiment. However, when comparing models from different families, such as DeBERTa and LLaMA, keeping them in the same experiment complicates things because the input data formats for NLI differ between DeBERTa and LLaMA, and their training pipelines are also distinct.
 
 - Regarding the East 1 migration and the creation of new branches, will we be creating a role for the feature release schema or for the role assignment feature release schema?
+
+- discuss on tach
