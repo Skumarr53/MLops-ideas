@@ -151,11 +151,11 @@ base_run_name = "Fine-tune_DeBERTa_v3"
 ## run_name for current quarter
 run_name = f"{base_run_name}_{run_date}"
 
-dataset_partition = ["full", "sample"] ## comutizable
+dataset_versions = ["version1", "version2"] ## customizable
 params = [{"n_epoches": 5}, {"n_epoches": 10}]
 
 
-for dataset in dataset_partition:
+for dataset in dataset_versions:
     for i,param_set in enumerate(params):
         with mlflow.start_run(run_name=f"{run_name}_{dataset}_paramset_{i}") as run: # for current run it named "Fine-tune_DeBERTa_v3_test"
             mlflow.set_tag("run_date", run_date)
@@ -172,28 +172,28 @@ for dataset in dataset_partition:
             # Define device
             device = 0 if torch.cuda.is_available() else -1
 
-            # # Initialize the pipeline
-            # model_folder_path = "/dbfs/mnt/access_work/UC25/Libraries/HuggingFace/"
-            # model_1_folder_name = "deberta-v3-large-zeroshot-v2"
-            # db0_classifier = pipeline("zero-shot-classification", model=model_folder_path + model_1_folder_name)
+            # Initialize the pipeline
+            model_folder_path = "/dbfs/mnt/access_work/UC25/Libraries/HuggingFace/"
+            model_1_folder_name = "deberta-v3-large-zeroshot-v2"
+            db0_classifier = pipeline("zero-shot-classification", model=model_folder_path + model_1_folder_name)
 
-            # import subprocess
-            # subprocess.run([
-            #     "python", "run_glue.py",
-            #     "--model_name_or_path", f"{model_folder_path}{model_1_folder_name}",
-            #     "--output_dir", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/Fine-tune NLI models/trained_RD_deberta-v3-large-zeroshot-v2_v3",
-            #     "--train_file", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/NLI_role_training_data/Role_FT_train_v3.csv",
-            #     "--validation_file", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/NLI_role_training_data/Role_FT_test_v3.csv",
-            #     "--do_train",
-            #     "--do_eval",
-            #     "--num_train_epochs", "3",
-            #     "--fp16",
-            #     "--report_to", "none",
-            #     "--learning_rate", "2e-5",
-            #     "--weight_decay", "0.01",
-            #     "--per_device_train_batch_size", "16",
-            #     "--per_device_eval_batch_size", "16"
-            # ], check=True)
+            import subprocess
+            subprocess.run([
+                "python", "run_glue.py",
+                "--model_name_or_path", f"{model_folder_path}{model_1_folder_name}",
+                "--output_dir", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/Fine-tune NLI models/trained_RD_deberta-v3-large-zeroshot-v2_v3",
+                "--train_file", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/NLI_role_training_data/Role_FT_train_v3.csv",
+                "--validation_file", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/NLI_role_training_data/Role_FT_test_v3.csv",
+                "--do_train",
+                "--do_eval",
+                "--num_train_epochs", "3",
+                "--fp16",
+                "--report_to", "none",
+                "--learning_rate", "2e-5",
+                "--weight_decay", "0.01",
+                "--per_device_train_batch_size", "16",
+                "--per_device_eval_batch_size", "16"
+            ], check=True)
 
             # After training, load the fine-tuned model
             fine_tuned_model_path = "/dbfs/mnt/access_work/UC25/Libraries/HuggingFace/deberta-v3-large-zeroshot-v2"
