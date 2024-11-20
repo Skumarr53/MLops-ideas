@@ -228,3 +228,25 @@ We are setting up a new branch for the limited release, named quant_lr. Here are
 Could you please look into this? Let me know if you need any further details.
 
 
+----- I have couple of things to discuss 
+- on east 1 migration regardig n creation of new branches are we going to create a role to the feature release schema or  role assignmet feature realse schma 
+- mlflow i was instaed 
+
+
+Here’s a rephrased version of your message:
+
+---
+
+Nov 20 -- 17:51 
+
+I have a few topics to discuss:
+
+- **Updates on Topic Modeling**: I have completed the packaging for the topic modeling code and the common NLP code and tested it sucessfully. right now, I will be publishing it on GitHub as a wheel (.whl) binary package, which is lightweight. I am also developing workflows for different topic modeling use cases using refcatored code. Currently, I've put this on hold to focus on integrating the MLflow requirements based on our previous discussions and implementing other necessary changes into common code.
+
+- **Company Similarity Pipelines**: I am working on implementing the changes suggested by Priya for the company similarity pipelines.
+
+**Questions**:
+
+- I have a suggestion regarding MLflow. Instead of logging different base models into the same experiment, why not maintain separate experiments and register the models in the same model registry? This approach would allow us to compare models in the registry that come from different experiments. For instance, if we are comparing different versions of the same base model, like DeBERTa small and large, we can include them in the same experiment. However, when comparing models from different families, such as DeBERTa and LLaMA, keeping them in the same experiment complicates things because the input data formats for NLI differ between DeBERTa and LLaMA, and their training pipelines are also distinct.
+
+- Regarding the East 1 migration and the creation of new branches, will we be creating a role for the feature release schema or for the role assignment feature release schema?
