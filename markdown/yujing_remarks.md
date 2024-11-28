@@ -12,3 +12,4 @@
 - [ ] Update the existing NLI module to operate without evaluation if a validation dataset is not provided.
 - [ ] Adjust the MLflow module to log the pretrained model and its run metrics to establish a benchmark.
 - [ ] testing NLI finetuning on cluster runtime 13.3
+- [ ] snowflake configartion fix 
