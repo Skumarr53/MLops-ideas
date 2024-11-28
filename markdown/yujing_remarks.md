@@ -5,3 +5,10 @@
        *centralized_nlp_package/utils/helpers.py/df_remove_rows_with_keywords.*
 - [x] Add a function to apply pandas row transofmration group of functions, 
 - [ ] add a parameter as list as to what columns need to be computedfor topic report generation
+
+
+### updated
+- [ ] Implement functionality to evaluate fine-tuned models and record run parameters and metrics for comparison.
+- [ ] Update the existing NLI module to operate without evaluation if a validation dataset is not provided.
+- [ ] Adjust the MLflow module to log the pretrained model and its run metrics to establish a benchmark.
+- [ ] testing NLI finetuning on cluster runtime 13.3
