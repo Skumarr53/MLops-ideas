@@ -82,54 +82,50 @@ import transformers
 from loguru import logger
 
 
-def run_finetune(base_model: str,train_file: str, validation_file: str, param_dict: Dict[str, Any]) -> Tuple[AutoModelForSequenceClassification, Dict[str, float]]:
-        logger.info("Starting training for DeBERTa model")
+def run_finetune(base_model_path: str,train_file: str, output_dir: str,validation_file: str: None, param_dict: Dict[str, Any] = {}) -> Tuple[AutoModelForSequenceClassification, Dict[str, float]]:
+    logger.info("Starting training for DeBERTa model")
 
-        # Prepare ModelArguments
-        model_args = ModelArguments(
-            model_name_or_path=base_model,
-            cache_dir=param_dict.get("cache_dir", None),
-            # learning_rate=param_dict.get("learning_rate", 2e-5),
-            # weight_decay=param_dict.get("weight_decay", 0.01),
-            # per_device_train_batch_size=param_dict.get("train_batch_size", 16),
-            # per_device_eval_batch_size=param_dict.get("eval_batch_size", 16)
-        )
+    # Prepare ModelArguments
+    model_args = ModelArguments(
+        model_name_or_path=base_model_path,
+        cache_dir=param_dict.get("cache_dir", None),
+    )
 
-        # Prepare DataTrainingArguments
-        data_args = DataTrainingArguments(
-            task_name=param_dict.get("task_name", None),
-            train_file=train_file,
-            validation_file=validation_file,
-            max_seq_length=param_dict.get("max_seq_length", 128),
-            pad_to_max_length=param_dict.get("pad_to_max_length", True),
-            overwrite_cache=param_dict.get("overwrite_cache", False),
-            max_train_samples=param_dict.get("max_train_samples", None),
-            max_eval_samples=param_dict.get("max_eval_samples", None),
-            max_predict_samples=param_dict.get("max_predict_samples", None)
-        )
+    # Prepare DataTrainingArguments
+    data_args = DataTrainingArguments(
+        task_name=param_dict.get("task_name", None),
+        train_file=train_file,
+        validation_file=validation_file,
+        max_seq_length=param_dict.get("max_seq_length", 128),
+        pad_to_max_length=param_dict.get("pad_to_max_length", True),
+        overwrite_cache=param_dict.get("overwrite_cache", False),
+        max_train_samples=param_dict.get("max_train_samples", None),
+        max_eval_samples=param_dict.get("max_eval_samples", None),
+        max_predict_samples=param_dict.get("max_predict_samples", None)
+    )
 
-        # Prepare TrainingArguments
-        training_args = TrainingArguments(
-            output_dir=param_dict.get("output_dir", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/Fine-tune NLI models/trained_RD_deberta-v3-base-zeroshot-v2_Santhosh_test/"),
-            do_train=True,
-            do_eval=True,
-            num_train_epochs=param_dict.get("n_epochs", 3),
-            learning_rate=param_dict.get("learning_rate", 2e-5),
-            weight_decay=param_dict.get("weight_decay", 0.01),
-            per_device_train_batch_size=param_dict.get("train_batch_size", 16),
-            per_device_eval_batch_size=param_dict.get("eval_batch_size", 16),
-            fp16=param_dict.get("fp16", True),
-            report_to=None,
-            overwrite_output_dir=param_dict.get("overwrite_output_dir", True),
-            push_to_hub=param_dict.get("push_to_hub", False),
-            seed=param_dict.get("seed", 42)
-        )
+    # Prepare TrainingArguments
+    training_args = TrainingArguments(
+        output_dir=param_dict.get("output_dir", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/Fine-tune NLI models/trained_RD_deberta-v3-base-zeroshot-v2_Santhosh_test/"),
+        do_train=True,
+        do_eval=True,
+        num_train_epochs=param_dict.get("n_epochs", 3),
+        learning_rate=param_dict.get("learning_rate", 2e-5),
+        weight_decay=param_dict.get("weight_decay", 0.01),
+        per_device_train_batch_size=param_dict.get("train_batch_size", 16),
+        per_device_eval_batch_size=param_dict.get("eval_batch_size", 16),
+        fp16=param_dict.get("fp16", True),
+        report_to=None,
+        overwrite_output_dir=param_dict.get("overwrite_output_dir", True),
+        push_to_hub=param_dict.get("push_to_hub", False),
+        seed=param_dict.get("seed", 42)
+    )
 
-        # Call run_glue
-        trained_model, eval_metrics = run_glue(model_args, data_args, training_args)
+    # Call run_glue
+    trained_model, eval_metrics = run_glue(model_args, data_args, training_args)
 
-        logger.info("Training completed for DeBERTa model")
-        return trained_model, eval_metrics
+    logger.info("Training completed for DeBERTa model")
+    return trained_model, eval_metrics
 
 
 # COMMAND ----------
@@ -310,3 +306,119 @@ def transition_model(
 # COMMAND ----------
 
 
+
+
+import logging
+from typing import Any, Dict, Optional, Tuple
+
+from transformers import (
+    AutoModelForSequenceClassification,
+    TrainingArguments,
+)
+from dataclasses import dataclass
+
+# Assuming ModelArguments and DataTrainingArguments are defined elsewhere
+# from your_module import ModelArguments, DataTrainingArguments, run_glue
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class ModelArguments:
+    model_name_or_path: str
+    cache_dir: Optional[str] = None
+
+@dataclass
+class DataTrainingArguments:
+    task_name: Optional[str] = None
+    train_file: str = ""
+    validation_file: Optional[str] = None
+    max_seq_length: int = 128
+    pad_to_max_length: bool = True
+    overwrite_cache: bool = False
+    max_train_samples: Optional[int] = None
+    max_eval_samples: Optional[int] = None
+    max_predict_samples: Optional[int] = None
+
+def run_finetune(
+    base_model_path: str,
+    train_file: str,
+    output_dir: str,
+    validation_file: Optional[str] = None,
+    param_dict: Optional[Dict[str, Any]] = None
+) -> Tuple[AutoModelForSequenceClassification, Dict[str, float]]:
+    """
+    Fine-tunes a pre-trained model on a given dataset.
+
+    Args:
+        base_model_path (str): Path to the base pre-trained model.
+        train_file (str): Path to the training data file.
+        output_dir (str): Directory to save the fine-tuned model and outputs.
+        validation_file (Optional[str], optional): Path to the validation data file. Defaults to None.
+        param_dict (Optional[Dict[str, Any]], optional): Dictionary of additional parameters. Defaults to None.
+
+    Returns:
+        Tuple[AutoModelForSequenceClassification, Dict[str, float]]: The trained model and evaluation metrics.
+    """
+    if param_dict is None:
+        param_dict = {}
+
+    logger.info("Starting fine-tuning process for the model.")
+
+    try:
+        # Prepare ModelArguments
+        model_args = ModelArguments(
+            model_name_or_path=base_model_path,
+            cache_dir=param_dict.get("cache_dir")
+        )
+        logger.debug(f"ModelArguments: {model_args}")
+
+        # Prepare DataTrainingArguments
+        data_args = DataTrainingArguments(
+            task_name=param_dict.get("task_name"),
+            train_file=train_file,
+            validation_file=validation_file,
+            max_seq_length=param_dict.get("max_seq_length", 128),
+            pad_to_max_length=param_dict.get("pad_to_max_length", True),
+            overwrite_cache=param_dict.get("overwrite_cache", False),
+            max_train_samples=param_dict.get("max_train_samples"),
+            max_eval_samples=param_dict.get("max_eval_samples"),
+            max_predict_samples=param_dict.get("max_predict_samples")
+        )
+        logger.debug(f"DataTrainingArguments: {data_args}")
+
+        # Prepare TrainingArguments
+        training_args = TrainingArguments(
+            output_dir=output_dir,
+            do_train=True,
+            do_eval=True,
+            num_train_epochs=param_dict.get("n_epochs", 3),
+            learning_rate=param_dict.get("learning_rate", 2e-5),
+            weight_decay=param_dict.get("weight_decay", 0.01),
+            per_device_train_batch_size=param_dict.get("train_batch_size", 16),
+            per_device_eval_batch_size=param_dict.get("eval_batch_size", 16),
+            fp16=param_dict.get("fp16", True),
+            report_to=param_dict.get("report_to", "none"),
+            overwrite_output_dir=param_dict.get("overwrite_output_dir", True),
+            push_to_hub=param_dict.get("push_to_hub", False),
+            seed=param_dict.get("seed", 42),
+            logging_dir=param_dict.get("logging_dir", f"{output_dir}/logs"),
+            logging_steps=param_dict.get("logging_steps", 500),
+            evaluation_strategy=param_dict.get("evaluation_strategy", "steps"),
+            save_strategy=param_dict.get("save_strategy", "steps"),
+            save_steps=param_dict.get("save_steps", 1000),
+            load_best_model_at_end=param_dict.get("load_best_model_at_end", True),
+            metric_for_best_model=param_dict.get("metric_for_best_model", "accuracy")
+        )
+        logger.debug(f"TrainingArguments: {training_args}")
+
+        # Call run_glue (ensure that run_glue is correctly implemented)
+        trained_model, eval_metrics = run_glue(model_args, data_args, training_args)
+        
+        logger.info("Fine-tuning completed successfully.")
+        logger.info(f"Evaluation Metrics: {eval_metrics}")
+
+        return trained_model, eval_metrics
+
+    except Exception as e:
+        logger.error(f"An error occurred during fine-tuning: {e}", exc_info=True)
+        raise
