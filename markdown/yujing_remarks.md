@@ -37,3 +37,11 @@ try:
     logger.info(f"Model logged successfully")
 except Exception as e:
     logger.error(f"Failed to log model: {e}")
+
+
+In reply to below message 
+ These results are quite promising and I used them to refine the labels. Please find attached a final label list (313 samples) and use them to backfill the data.
+
+rephrase my response, elobarte and more clarity
+
+Hi yujing, I have run finetuned model on the refined labels dataset and finetuned model artifacts can be found on the following path:  
