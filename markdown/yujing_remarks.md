@@ -16,3 +16,24 @@
 
 
 https://github.com/Skumarr53/Topic-modelling-Loc
+
+
+
+
+2024-12-03 13:20:31 | ERROR   | experiment_manager.py:103 | Failed to log model: Cannot pickle a prepared model with automatic mixed precision, please unwrap the model with `Accelerator.unwrap_model(model)` before pickling it.
+
+
+
+trained_model is of type AutoModelForSequenceClassification
+
+
+code:
+unwrapped_model = self.accelerator.unwrap_model(trained_model)
+if hasattr(unwrapped_model, 'half'):
+    unwrapped_model = unwrapped_model.float()
+
+try:
+    mlflow.pytorch.log_model(unwrapped_model, "model")
+    logger.info(f"Model logged successfully")
+except Exception as e:
+    logger.error(f"Failed to log model: {e}")
