@@ -44,4 +44,6 @@ In reply to below message
 
 rephrase my response, elobarte and more clarity
 
-Hi yujing, I have run finetuned model on the refined labels dataset and finetuned model artifacts can be found on the following path:  
+Hi yujing, I have run finetuned model on the refined labels dataset and finetuned model artifacts can be found on the following path:
+
+
