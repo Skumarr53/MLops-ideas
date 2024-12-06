@@ -132,6 +132,7 @@ class ModelArguments:
         ... )
     """
     model_name_or_path: str = field(
+        default="/dbfs/mnt/access_work/UC25/Libraries/HuggingFace/deberta-v3-large-zeroshot-v2",
         metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
     )
     config_name: Optional[str] = field(

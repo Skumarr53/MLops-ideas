@@ -218,7 +218,6 @@ def sentscore(a, b, weight = True):
     return np.dot(a,b)/num
   else:
     return np.dot([1 if x>0 else 0 for x in a], b)/num
-
 def netscore(a, b):
   
   # number of relevant sentences
@@ -242,7 +241,7 @@ def netscore(a, b):
   
 #   return []
 
-
+/dbfs/mnt/access_work/UC25/Embeddings/Word lists/macro_inno_prod_v1.csv
 match_df_v0['Refined Keywords'] = match_df_v0['Refined Keywords'].apply(ast.literal_eval)
 
 match_df = match_df_v0[['Subtopic','Refined Keywords']].explode(column='Refined Keywords')

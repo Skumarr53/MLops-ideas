@@ -13,7 +13,7 @@ class DeBERTaModel(BaseModel):
         logger.info(f"Loading DeBERTa model from {self.model_path}")
         return pipeline("zero-shot-classification", model=self.model_path, device=self.device)
 
-    def train(self, train_file: str, validation_file: str, param_dict: Dict[str, Any]) -> Tuple[AutoModelForSequenceClassification, Dict[str, float]]:
+    def train(self, train_file: str, validation_file: str, param_dict: Dict[str, Any], output_dir: str) -> Tuple[AutoModelForSequenceClassification, Dict[str, float]]:
         logger.info("Starting training for DeBERTa model")
 
         # Prepare ModelArguments
@@ -41,7 +41,7 @@ class DeBERTaModel(BaseModel):
 
         # Prepare TrainingArguments
         training_args = TrainingArguments(
-            output_dir=param_dict.get("output_dir", "/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/Fine-tune NLI models/trained_RD_deberta-v3-base-zeroshot-v2_Santhosh_test/"),
+            output_dir=output_dir,
             do_train=True,
             do_eval=True,
             num_train_epochs=param_dict.get("n_epochs", 3),

@@ -1,4 +1,4 @@
-from mlflow_utils import ExperimentManager, ModelSelector, ModelTransition, get_current_date
+from centralized_nlp_package.mlflow_utils import ExperimentManager, ModelSelector, ModelTransition, get_current_date
 from loguru import logger
 
 def main():

@@ -14,6 +14,7 @@ from snowflake.connector import connect
 from loguru import logger
 from pyspark.sql import SparkSession, DataFrame
 from functools import wraps
+from databricks.sdk.runtime import *
 
 from centralized_nlp_package import config
 from centralized_nlp_package.utils import determine_environment
@@ -117,8 +118,8 @@ def retrieve_snowflake_private_key(config) -> str:
 
     # Retrieve encrypted private key and password from AKV
     try:
-        key_file = dbutils.secrets.get(scope="id-secretscope-dbk-pr4707-prod-work", key=config.snowflake_key)
-        pwd = dbutils.secrets.get(scope="id-secretscope-dbk-pr4707-prod-work", key=config.snowflake_pwd)
+        key_file = dbutils.secrets.get(scope="id-secretscope-dbk-pr4707-prod-work", key=config.key)
+        pwd = dbutils.secrets.get(scope="id-secretscope-dbk-pr4707-prod-work", key=config.password)
         logger.debug("Retrieved secrets from AKV successfully.")
     except Exception as e:
         logger.error(f"Error retrieving secrets from AKV: {e}")
@@ -157,7 +158,7 @@ def retrieve_snowflake_private_key(config) -> str:
 
 
 @with_spark_session
-def get_snowflake_connection_options(database: str = 'EDS_PROD' , schema: str = 'QUANT', env: str = None) -> Dict[str, str]:
+def get_snowflake_connection_options(database: str = 'EDS_PROD' , schema: str = 'QUANT') -> Dict[str, str]:
     """
     Constructs and returns a dictionary of Snowflake connection options.
 
@@ -172,9 +173,9 @@ def get_snowflake_connection_options(database: str = 'EDS_PROD' , schema: str = 
     """
     global _spark_session  # Access Spark session if needed
 
-    determined_env = determine_environment(env)
+    determined_env = determine_environment()
     _config = config.lib_config.snowflake[determined_env]
-    private_key = retrieve_snowflake_private_key()
+    private_key = retrieve_snowflake_private_key(_config)
 
     
     snowflake_options = {
