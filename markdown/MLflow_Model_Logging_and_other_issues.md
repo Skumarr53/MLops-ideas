@@ -1529,6 +1529,7 @@ MLflow offers built-in support for Hugging Face Transformers, which inherently m
 - **Registered Model Name:** Replace `"Your_Registered_Model_Name"` with your actual model registry name.
 - **Model URI:** Ensure the `model_uri` points to the correct stage (e.g., `"Production"`).
 
+
 ---
 
 ## **2. Creating a Custom PyFunc Model with Temporary Artifacts**
@@ -1959,3 +1960,21 @@ By adopting these strategies, you can maintain a clean file system while ensurin
 ---
 
 Feel free to reach out if you encounter any challenges or need further assistance with specific parts of the implementation!
+
+
+
+## ---------------------- Other issues
+
+MlflowException: The task type cannot be inferred from the submitted Pipeline or dictionary of model components. Please provide the task type explicitly when saving or logging this submitted Pipeline or dictionary of components.
+
+```
+                        components = {
+                            "model": ft_model,
+                            "tokenizer": tokenizer
+                            }
+                        
+                        mlflow.transformers.log_model(
+                            transformers_model=components,
+                            artifact_path="model")
+                        logger.info(f"Model logged successfully")
+```
