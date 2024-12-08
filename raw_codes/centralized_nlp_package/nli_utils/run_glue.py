@@ -6,6 +6,7 @@
 import logging
 import os
 import sys
+import time
 from typing import Optional, Dict, Any, Tuple
 from loguru import logger
 import transformers
@@ -119,6 +120,9 @@ def run_glue(
         revision=model_args.model_revision,
         token=model_args.token,
         trust_remote_code=model_args.trust_remote_code,
+        learning_rate = training_args.learning_rate,
+        weight_decay = training_args.weight_decay,
+        num_train_epochs = training_args.num_train_epochs
     )
 
     config = AutoConfig.from_pretrained(
@@ -128,6 +132,7 @@ def run_glue(
         cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
         trust_remote_code=model_args.trust_remote_code,
+
     )
     model = AutoModelForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
@@ -151,7 +156,9 @@ def run_glue(
             max_train_samples = min(len(train_dataset), data_args.max_train_samples)
             train_dataset = train_dataset.select(range(max_train_samples))
 
+    ## Add inference time
     if training_args.do_eval:
+        
         if "validation" not in raw_datasets and "validation_matched" not in raw_datasets:
             raise ValueError("--do_eval requires a validation dataset")
         eval_dataset = raw_datasets["validation_matched" if data_args.task_name == "mnli" else "validation"]
@@ -198,9 +205,11 @@ def run_glue(
         eval_metrics.update(train_metrics)
 
     if training_args.do_eval:
+        start_time = time.time()
         evaluation = evaluate(trainer, data_args, model_args, task_name=data_args.task_name)
+        eval_execution_time = time.time() - start_time
         print(f"***** evaluate metrics *****")
-        print(evaluation)
+        eval_metrics['evalaution_time'] = eval_execution_time
         eval_metrics.update(evaluation)
 
     if training_args.push_to_hub:
@@ -210,7 +219,7 @@ def run_glue(
 
     trained_model = trainer.model
     print(eval_metrics)
-    return trained_model, eval_metrics
+    return trained_model, tokenizer, eval_metrics
 
 def run_finetune(
     base_model_path: str,
@@ -285,12 +294,12 @@ def run_finetune(
         logger.debug(f"TrainingArguments: {training_args}")
 
         # Call run_glue (ensure that run_glue is correctly implemented)
-        finetuned_model, eval_metrics = run_glue(model_args, data_args, training_args)
+        finetuned_model, tokenizer, eval_metrics = run_glue(model_args, data_args, training_args)
         
         logger.info("Fine-tuning completed successfully.")
         logger.info(f"Evaluation Metrics: {eval_metrics}")
 
-        return finetuned_model, eval_metrics
+        return finetuned_model,tokenizer, eval_metrics
 
     except Exception as e:
         logger.error(f"An error occurred during fine-tuning: {e}", exc_info=True)

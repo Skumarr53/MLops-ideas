@@ -8,6 +8,7 @@ from centralized_nlp_package.common_utils import get_current_date_str
 from centralized_nlp_package.nli_utils import get_nli_model_metrics
 from datetime import datetime
 import mlflow
+import mlflow.transformers
 from accelerate import Accelerator
 # from .utils import format_experiment_name, format_run_name, get_current_date, validate_path
 from typing import List, Dict, Any
@@ -82,25 +83,25 @@ class ExperimentManager:
                         
                         # Train model
                         train_file_path = self.train_file.format(data_version=dataset_version)
-                        ft_model, eval_metrics = model.train(
+                        ft_model, tokenizer, eval_metrics = model.train(
                             train_file=train_file_path,
                             validation_file=self.validation_file,
                             param_dict=param_set,
                             output_dir = self.output_dir
                         )
                         
-                        # Save and log model
-                        # output_path = os.path.join(self.output_dir, run_name)
-                        # os.makedirs(output_path, exist_ok=True)
-                        # trained_model.save_model(output_path)
-
-                        finetuned_model = AutoModelForSequenceClassification.from_pretrained(self.output_dir)
-
-                        try:
-                            mlflow.pytorch.log_model(finetuned_model, "model")
-                            logger.info(f"Model logged successfully")
-                        except Exception as e:
-                            logger.error(f"Failed to log model: {e}")
+                        components = {
+                            "model": ft_model,
+                            "tokenizer": tokenizer
+                            }
+                        
+                        mlflow.transformers.log_model(
+                            transformers_model=components,
+                            task="zero-shot-classification",
+                            artifact_path="model")
+                        logger.info(f"Model logged successfully")
+                        # except Exception as e:
+                        #     logger.error(f"Failed to log model: {e}")
 
                         # Example metrics dictionary
                         metrics = {
@@ -116,9 +117,7 @@ class ExperimentManager:
                         
                         logger.info(f"Run {run_name} completed with accuracy: {eval_metrics['eval_accuracy']}")
 
-                        
-                        torch.cuda.empty_cache()
-                        gc.collect()
+
 
     def evaluate_pretrained_model(self, base_model):
 
@@ -154,7 +153,15 @@ class ExperimentManager:
             
             print("metrics",metrics)
 
-            mlflow.pytorch.log_model(model, "model")
+            components = {
+                "model": model,
+                "tokenizer": tokenizer
+                }
+
+            mlflow.transformers.log_model(
+                            transformers_model=components,
+                            task="zero-shot-classification",
+                            artifact_path="model")
 
             
             # Log metrics 

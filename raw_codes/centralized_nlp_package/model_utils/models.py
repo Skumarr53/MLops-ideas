@@ -57,10 +57,10 @@ class DeBERTaModel(BaseModel):
         )
 
         # Call run_glue
-        trained_model, eval_metrics = run_glue(model_args, data_args, training_args)
+        trained_model, tokenizer, eval_metrics = run_glue(model_args, data_args, training_args)
 
         logger.info("Training completed for DeBERTa model")
-        return trained_model, eval_metrics
+        return trained_model, tokenizer, eval_metrics
 
     def evaluate(self, validation_file: str) -> Dict[str, float]:
         logger.info("Evaluating DeBERTa model")
