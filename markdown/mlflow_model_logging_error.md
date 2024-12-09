@@ -102,3 +102,17 @@ except Exception as e:
 ```
 
 Let me know if this resolves your issue or if further debugging is needed!
+
+
+### load prod model
+
+```
+
+mlflow==2.18.0
+
+
+production_model = mlflow.transformers.load_model(
+    model_uri="models:/prod_model/Production"
+)
+nli_pipeline = pipeline("zero-shot-classification", model=production_model.model, tokenizer=production_model.tokenizer, device= 0 if torch.cuda.is_available() else -1)
+```
