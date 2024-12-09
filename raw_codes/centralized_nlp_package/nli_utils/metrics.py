@@ -7,8 +7,7 @@ from loguru import logger
 from typing import List, Dict, Any, Callable, Optional
 
 import torch
-from transformers import EvalPrediction
-from transformers import pipeline, Pipeline, AutoConfig
+from transformers import (EvalPrediction,pipeline, Pipeline, AutoConfig, AutoTokenizer, AutoModelForSequenceClassification)
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from dataclasses import dataclass, asdict
 
@@ -20,8 +19,8 @@ class ModelEvaluationResult:
     num_train_epochs: int
     learning_rate: float
     weight_decay: float
-    per_device_train_batch_size: int
-    per_device_eval_batch_size: int
+    train_batch_size: int
+    eval_batch_size: int
     accuracy: float
     precision: float
     recall: float
@@ -177,21 +176,23 @@ def evaluate_nli_models(
 
 
         # Extract model family name from the model path or configuration
-        config = AutoConfig.from_pretrained(model_path)
-        model_family_name = config._name_or_path
+        # config = AutoConfig.from_pretrained(model_path)
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
+        model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
         # Retrieve fine-tuning parameters from the configuration or a separate file
         # This assumes that fine-tuning parameters are stored in the model's config
         # Modify this part if your fine-tuning parameters are stored differently
-        num_train_epochs = config.num_train_epochs if hasattr(config, 'num_train_epochs') else None
-        learning_rate = config.learning_rate if hasattr(config, 'learning_rate') else None
-        weight_decay = config.weight_decay if hasattr(config, 'weight_decay') else None
-        per_device_train_batch_size = config.per_device_train_batch_size if hasattr(config, 'per_device_train_batch_size') else None
-        per_device_eval_batch_size = config.per_device_eval_batch_size if hasattr(config, 'per_device_eval_batch_size') else None
+        model_family_name = model.config.model_family if hasattr(model.config, 'model_family') else None
+        num_train_epochs = model.config.num_train_epochs if hasattr(model.config, 'num_train_epochs') else None
+        learning_rate = model.config.learning_rate if hasattr(model.config, 'learning_rate') else None
+        weight_decay = model.config.weight_decay if hasattr(model.config, 'weight_decay') else None
+        train_batch_size = model.config.train_batch_size if hasattr(model.config, 'train_batch_size') else None
+        eval_batch_size = model.config.eval_batch_size if hasattr(model.config, 'eval_batch_size') else None
         
         nli_pipeline = pipeline(
             "zero-shot-classification",
-            model=model_path,
+            model=model, tokenizer=tokenizer,
             device=0 if torch.cuda.is_available() else -1 )
         print("loading model:", model_path)
     
@@ -210,8 +211,8 @@ def evaluate_nli_models(
             num_train_epochs=num_train_epochs,
             learning_rate=learning_rate,
             weight_decay=weight_decay,
-            per_device_train_batch_size=per_device_train_batch_size,
-            per_device_eval_batch_size=per_device_eval_batch_size,
+            train_batch_size=train_batch_size,
+            eval_batch_size=eval_batch_size,
             accuracy=metrics.get("accuracy", float('nan')),
             precision=metrics.get("precision", float('nan')),
             recall=metrics.get("recall", float('nan')),

@@ -134,6 +134,18 @@ def run_glue(
         trust_remote_code=model_args.trust_remote_code,
 
     )
+
+    ## add additional parameters to config 
+    config.learning_rate = training_args.learning_rate
+    config.weight_decay = training_args.weight_decay
+    config.num_train_epochs = training_args.num_train_epochs
+    config.train_batch_size = training_args.per_device_train_batch_size
+    config.eval_batch_size = training_args.per_device_eval_batch_size
+    config.model_family = model_args.model_name_or_path.split('/')[-1]
+
+    config.save_pretrained(training_args.output_dir)
+
+
     model = AutoModelForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),

@@ -16,6 +16,8 @@ from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassifica
 from .models import get_model
 
 
+mlflow.set_tracking_uri("http://localhost:5000")
+
 class ExperimentManager:
     def __init__(
         self,
