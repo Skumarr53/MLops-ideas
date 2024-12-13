@@ -26,6 +26,15 @@
 # COMMAND ----------
 
 import ast
+import numpy as np
+import pandas as pd
+import gc
+from dask.diagnostics import ProgressBar
+import dask.dataframe as dd
+from pyspark.sql import SparkSession, DataFrame
+import pyspark.sql.functions as F
+
+
 from centralized_nlp_package.data_access import (
     read_from_snowflake,
     write_dataframe_to_snowflake
@@ -41,6 +50,7 @@ from centralized_nlp_package.data_processing import (
 from centralized_nlp_package.text_processing import (initialize_spacy, get_match_set)
 
 from topic_modelling_package.reports import create_topic_dict, generate_topic_report, replace_separator_in_dict_words
+
 
 # COMMAND ----------
 
@@ -63,16 +73,20 @@ tsQuery
 
 # COMMAND ----------
 
-resultspkdf = read_from_snowflake(tsQuery)
+# resultspkdf = read_from_snowflake(tsQuery)
+
+# # COMMAND ----------
+
+# currdf_old = resultspkdf.toPandas()
+# currdf_ref = resultspkdf.toPandas()
+
+currdf_old = pd.read_csv('data/currdf_ref.csv')
+currdf_ref = pd.read_csv('data/currdf_ref.csv')
+
 
 # COMMAND ----------
 
-currdf_old = resultspkdf.toPandas()
-currdf_ref = resultspkdf.toPandas()
-
-# COMMAND ----------
-
-currdf_ref.to_csv('/Workspace/Users/santhosh.kumar3@voya.com/MLFlow_and_NLI_finetune/currdf_ref.csv', index=False)
+# currdf_ref.to_csv('/Workspace/Users/santhosh.kumar3@voya.com/MLFlow_and_NLI_finetune/currdf_ref.csv', index=False)
 
 # COMMAND ----------
 
@@ -86,13 +100,13 @@ currdf_ref.to_csv('/Workspace/Users/santhosh.kumar3@voya.com/MLFlow_and_NLI_fine
 
 # COMMAND ----------
 
-import os
-if len(currdf_old)>0:
-    print('The data spans from ' + str(currdf_old['PARSED_DATETIME_EASTERN_TZ'].min()) + ' to ' + str(currdf_old['PARSED_DATETIME_EASTERN_TZ'].max()) + 'and has ' + str(currdf_old.shape[0]) + ' rows and ' + str(currdf_old.shape[1]) + ' columns.')
-else:
-    print('No new transcripts to parse.')
-    dbutils.notebook.exit(1)
-    os._exit(1)
+# import os
+# if len(currdf_old)>0:
+#     print('The data spans from ' + str(currdf_old['PARSED_DATETIME_EASTERN_TZ'].min()) + ' to ' + str(currdf_old['PARSED_DATETIME_EASTERN_TZ'].max()) + 'and has ' + str(currdf_old.shape[0]) + ' rows and ' + str(currdf_old.shape[1]) + ' columns.')
+# else:
+#     print('No new transcripts to parse.')
+#     dbutils.notebook.exit(1)
+#     os._exit(1)
 
 # COMMAND ----------
 
@@ -137,12 +151,13 @@ currdf_old.head(5)
 # COMMAND ----------
 
 col_inti_tranform = [
+  ("CALL_ID","CALL_ID", str),
     ("FILT_MD", "FILT_MD", ast.literal_eval),
     ("FILT_QA", "FILT_QA", ast.literal_eval),
     ("SENT_LABELS_FILT_QA", "SENT_LABELS_FILT_QA", ast.literal_eval),
     ("SENT_LABELS_FILT_MD", "SENT_LABELS_FILT_MD", ast.literal_eval),
-    ('LEN_MD', 'FILT_MD', len),
-    ('LEN_QA', 'FILT_QA', len),
+    ('LEN_FILT_MD', 'FILT_MD', len),
+    ('LEN_FILT_QA', 'FILT_QA', len),
     ('SENT_LABELS_FILT_QA', ['SENT_LABELS_FILT_QA','FILT_QA'], (lambda x: [x['SENT_LABELS_FILT_QA'][i] 
                                                                            for i, sent in enumerate(x['FILT_QA']) 
                                                                            if not sent.endswith('?')])),
@@ -150,6 +165,8 @@ col_inti_tranform = [
 ]
 
 currdf_ref = df_apply_transformations(currdf_ref, col_inti_tranform)
+assert currdf_old.equals(currdf_ref), "The DataFrames are not identical."
+print("The DataFrames are not identical.")
 currdf_ref.head(5)
 
 # COMMAND ----------
@@ -183,6 +200,8 @@ nlp.max_length = 1000000000
 
 nlp_ref = initialize_spacy()
 
+assert nlp_ref.config == nlp.config
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -192,12 +211,12 @@ nlp_ref = initialize_spacy()
 
 import pandas as pd
 
-match_df_v0_old = pd.read_csv("/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/MASS_labor_macro_dictionaries_final.csv")
-match_df_v0_ref = pd.read_csv("/dbfs/mnt/access_work/UC25/Topic Modeling/NLI Models/MASS_labor_macro_dictionaries_final.csv")
+match_df_v0_old = pd.read_csv("data/match_df.csv")
+match_df_v0_ref = pd.read_csv("data/match_df.csv")
 
 # COMMAND ----------
 
-match_df_v0_old.to_csv('/Workspace/Users/santhosh.kumar3@voya.com/MLFlow_and_NLI_finetune/match_df.csv', index=False)
+# match_df_v0_old.to_csv('/Workspace/Users/santhosh.kumar3@voya.com/MLFlow_and_NLI_finetune/match_df.csv', index=False)
 
 # COMMAND ----------
 
@@ -225,7 +244,7 @@ match_df_old.head(5)
 
 match_df_v0_ref = df_apply_transformations(match_df_v0_ref, [('Refined Keywords', 'Refined Keywords', ast.literal_eval)])
 match_df_ref = match_df_v0_ref[['Subtopic','Refined Keywords']].explode(column='Refined Keywords')
-
+assert match_df_old.equals(match_df_ref), "The DataFrames are not identical."
 match_df_ref.head(5)
 
 # COMMAND ----------
@@ -308,7 +327,19 @@ match_df_ref.head()
 
 # COMMAND ----------
 
-word_set_dict_ref, negate_dict_ref = create_topic_dict(match_df_ref)
+word_set_dict_ref, negate_dict_ref = create_topic_dict(match_df_ref, nlp_ref)
+
+## comparing word_set_dict
+assert all(
+    key in word_set_dict_ref and
+    all(np.array_equal(word_set_dict_old[key][sub_key], word_set_dict_ref[key][sub_key])
+        for sub_key in word_set_dict_old[key])
+    for key in word_set_dict_old
+), "The dictionaries are not equal."
+
+## comparing negate_dict
+
+assert all(np.array_equal(negate_dict_old[key], negate_dict_ref[key]) for key in negate_dict_ref), "The dictionaries are not equal."
 
 # COMMAND ----------
 
@@ -340,6 +371,8 @@ for k, v in negate_dict_old.items():
 
 negate_dict1_ref = replace_separator_in_dict_words(negate_dict_ref)
 
+assert all(np.array_equal(negate_dict1_old[key], negate_dict1_ref[key]) for key in negate_dict1_ref), "The dictionaries are not equal."
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -351,6 +384,13 @@ negate_dict1_ref = replace_separator_in_dict_words(negate_dict_ref)
 # MAGIC #### old
 
 # COMMAND ----------
+
+def wordTokenize(doc):
+  
+  return [ent.lemma_.lower() for ent in nlp(doc) if not ent.is_stop and not ent.is_punct and ent.pos_ != 'NUM']
+
+def find_ngrams(input_list, n):
+  return zip(*[input_list[i:] for i in range(n)])
 
 def match_count_lowStat(texts, match_sets, phrases = True, suppress = None):
 
@@ -413,7 +453,7 @@ def sentscore(a, b, weight = True):
 
 # COMMAND ----------
 
-currdf_old = dd.from_pandas(currdf_old, npartitions = 32)
+currdf_old = dd.from_pandas(currdf_old.head(2), npartitions = 4)
 for label, section in {'FILT_MD': 'FILT_MD', 'FILT_QA': 'FILT_QA'}.items():
 
   currdf_old['matches_' + label] = currdf_old[section].apply(lambda x: match_count_lowStat(x, word_set_dict_old, phrases = True, suppress = negate_dict1_old), meta = ('matches_' + label, object))
@@ -424,22 +464,24 @@ with ProgressBar():
   currdf_old = currdf_old.compute()
 
 
+# for label, section in {'FILT_MD': 'MGNT_DISCUSSION', 'FILT_QA': 'QA_SECTION'}.items():
+
+#   for topic in word_set_dict_old.keys():
+#     currdf_old['matches_' + label] = currdf_old['matches_' + label].apply(ast.literal_eval)
+#     currdf_old[topic + '_TOTAL_' + label] = currdf_old['matches_' + label].apply(lambda x: x[topic]['total'])
+#     currdf_old[topic + '_STATS_' + label] = currdf_old['matches_' + label].apply(lambda x: x[topic]['stats'])
+
+#   currdf_old.drop(['matches_' + label], axis = 1, inplace = True)
+#   gc.collect()
+
+# # Dask is not used for below code due to unfixable bugs
+# # Below code only used to aggregate stats and organize data
+
+
 for label, section in {'FILT_MD': 'MGNT_DISCUSSION', 'FILT_QA': 'QA_SECTION'}.items():
-
+  currdf_old['matches_' + label] = currdf_old['matches_' + label].apply(ast.literal_eval)
   for topic in word_set_dict_old.keys():
-    currdf_old[topic + '_TOTAL_' + label] = currdf_old['matches_' + label].apply(lambda x: x[topic]['total'])
-    currdf_old[topic + '_STATS_' + label] = currdf_old['matches_' + label].apply(lambda x: x[topic]['stats'])
-
-  currdf_old.drop(['matches_' + label], axis = 1, inplace = True)
-  gc.collect()
-
-# Dask is not used for below code due to unfixable bugs
-# Below code only used to aggregate stats and organize data
-
-
-for label, section in {'FILT_MD': 'MGNT_DISCUSSION', 'FILT_QA': 'QA_SECTION'}.items():
-
-  for topic in word_set_dict_old.keys():
+    
     currdf_old[topic + '_TOTAL_' + label] = currdf_old['matches_' + label].apply(lambda x: x[topic]['total'])
     currdf_old[topic + '_STATS_' + label] = currdf_old['matches_' + label].apply(lambda x: x[topic]['stats'])
 
@@ -453,7 +495,7 @@ for label, section in {'FILT_MD': 'MGNT_DISCUSSION', 'FILT_QA': 'QA_SECTION'}.it
  
   for topic in word_set_dict_old.keys():
   
-  # relevance = #sentences detected with topic / #total sentences
+    # relevance = #sentences detected with topic / #total sentences
     currdf_old[topic + '_REL_' + label] = currdf_old[topic + '_TOTAL_' + label].apply(lambda x: len([a for a in x if a>0])/len(x) if len(x)>0 else None)
     currdf_old[topic + '_COUNT_' + label] = currdf_old[topic + '_TOTAL_' + label].apply(lambda x: len([a for a in x if a>0]) if len(x)>0 else None)
     currdf_old[topic + '_SENT_' + label] = currdf_old[[topic + '_TOTAL_' + label, 'SENT_LABELS_' + label]].apply(lambda x: sentscore(x[0], x[1], weight = False), axis = 1)
@@ -465,8 +507,9 @@ for label, section in {'FILT_MD': 'MGNT_DISCUSSION', 'FILT_QA': 'QA_SECTION'}.it
 # MAGIC #### refactored
 
 # COMMAND ----------
+currdf = generate_topic_report(currdf_ref.head(2), word_set_dict_ref, negate_dict1_ref,nlp_ref, stats_list = ['total', 'stats','relevance', 'count', 'sentiment'])
+assert currdf_old.equals(currdf[currdf_old.columns]), "The DataFrames are not identical."
 
-currdf = generate_topic_report(currdf_ref, word_set_dict_ref, negate_dict1_ref, stats_list = ['relevance', 'count', 'sentiment'])
 
 
 # COMMAND ----------
@@ -480,9 +523,13 @@ currdf = generate_topic_report(currdf_ref, word_set_dict_ref, negate_dict1_ref, 
 # MAGIC #### old
 
 # COMMAND ----------
+from pyspark.sql import SQLContext
 
 from pyspark.sql.types import *
 
+
+spark = (SparkSession.builder.appName('test').getOrCreate())
+         
 # Auxiliar functions
 def equivalent_type(string, f):
     print(string, f)
@@ -512,28 +559,43 @@ def define_structure(string, format_type):
     return StructField(string, typo)
 
 # Given pandas dataframe, it will return a spark's dataframe.
-def pandas_to_spark(pandas_df):
+def pandas_to_spark_old(pandas_df):
     columns = list(pandas_df.columns)
     types = list(pandas_df.dtypes)
     struct_list = []
     for column, typo in zip(columns, types): 
       struct_list.append(define_structure(column, typo))
+      print(column)
     p_schema = StructType(struct_list)
-    return sqlContext.createDataFrame(pandas_df, p_schema)
+    return spark.createDataFrame(pandas_df, p_schema)
 
 
-spark_parsedDF = pandas_to_spark(currdf)
-spark_parsedDF = spark_parsedDF.replace(np.nan, None)
-spark_parsedDF = spark_parsedDF.withColumn("DATE", F.to_timestamp(spark_parsedDF.DATE, 'yyyy-MM-dd'))
-spark_parsedDF = spark_parsedDF.withColumn("PARSED_DATETIME_EASTERN_TZ", F.to_timestamp(spark_parsedDF.PARSED_DATETIME_EASTERN_TZ, 'yyyy-MM-dd HH mm ss'))
-spark_parsedDF = spark_parsedDF.withColumn("EVENT_DATETIME_UTC", F.to_timestamp(spark_parsedDF.EVENT_DATETIME_UTC, 'yyyy-MM-dd HH mm ss'))                                                                            
-new_sf.db = 'EDS_PROD'
-new_sf.schema = 'QUANT'
+for col in ['SENT_LABELS_FILT_MD','SENT_LABELS_FILT_QA']:
+  currdf_old[col] = currdf_old[col].apply(ast.literal_eval).astype(object)
+
+
+spark_parsedDF_old = pandas_to_spark_old(currdf_old)
+spark_parsedDF_old = spark_parsedDF_old.replace(np.nan, None)
+spark_parsedDF_old = spark_parsedDF_old.withColumn("DATE", F.to_timestamp(spark_parsedDF_old.DATE, 'yyyy-MM-dd'))
+spark_parsedDF_old = spark_parsedDF_old.withColumn("PARSED_DATETIME_EASTERN_TZ", F.to_timestamp(spark_parsedDF_old.PARSED_DATETIME_EASTERN_TZ, 'yyyy-MM-dd HH mm ss'))
+spark_parsedDF_old = spark_parsedDF_old.withColumn("EVENT_DATETIME_UTC", F.to_timestamp(spark_parsedDF_old.EVENT_DATETIME_UTC, 'yyyy-MM-dd HH mm ss'))                                                                                    
+# new_sf.db = 'EDS_PROD'
+# new_sf.schema = 'QUANT'
 
 # COMMAND ----------
 
+
 # MAGIC %md
 # MAGIC #### refactored
+spark_parsedDF = pandas_to_spark(currdf, column_type_mapping = {'FILT_MD' :  ArrayType(StringType()),
+                                                                'FILT_QA' :  ArrayType(StringType()),
+                                                                '_len_' :  ArrayType(IntegerType()),
+                                                                '_total_' :  ArrayType(IntegerType()),
+                                                                '_count_' :  IntegerType(),
+                                                                '_stats_' :  MapType(StringType(), IntegerType()),
+                                                                'sent_scores' :  ArrayType(FloatType()),
+                                                                'sent_labels' :  ArrayType(IntegerType())}, spark)
+
 
 # COMMAND ----------
 
