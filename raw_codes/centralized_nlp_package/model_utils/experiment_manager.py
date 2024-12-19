@@ -46,7 +46,6 @@ class ExperimentManager:
         self.evalute_pretrained_model = evalute_pretrained_model
         self.eval_entailment_thresold = eval_entailment_thresold
         self.eval_df = pd.read_csv(validation_file)
-        self.accelerator = Accelerator()
         self.pred_path = "predictions.csv"
         self.testset_name,_ = os.path.splitext(os.path.basename(self.validation_file))
          
@@ -89,14 +88,14 @@ class ExperimentManager:
 
 
             ## Prepare logging metrics
+            with torch.no_grad():
+                with pipeline("zero-shot-classification", model=ft_model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1) as nli_pipeline:
+                    eval_df = self.eval_df.copy()
+                    metrics = get_nli_model_metrics(nli_pipeline, eval_df, self.eval_entailment_thresold)
+                    eval_df['entailment_scores'] = metrics['scores']  
+                    eval_df['predictions'] = metrics['predictions']
+                    eval_df.to_csv(self.pred_path, index=False)
 
-            nli_pipeline = pipeline("zero-shot-classification", model=ft_model, 
-                                    tokenizer=tokenizer, batch_size=2,
-                                    device= 0 if torch.cuda.is_available() else -1)
-
-            eval_df = self.eval_df.copy()
-            metrics = get_nli_model_metrics(nli_pipeline, eval_df, self.eval_entailment_thresold)
-                    
             # Example metrics dictionary
 
             eval_df['entailment_scores'] = metrics['scores']  
@@ -108,6 +107,7 @@ class ExperimentManager:
                 "model": ft_model,
                 "tokenizer": tokenizer
                 }
+            
 
             # Log multiple metrics at once
             mlflow.log_metrics({
@@ -122,6 +122,7 @@ class ExperimentManager:
                 transformers_model=components,
                 task="zero-shot-classification",
                 artifact_path="model")
+            del components
             logger.info(f"Model Artifacts logged successfully")
             
             logger.info(f"Run {run_name} completed with accuracy: {eval_metrics['eval_accuracy']}")
@@ -130,12 +131,13 @@ class ExperimentManager:
 
         finally:
             # Cleanup to free memory
-            del components
             del nli_pipeline
             del ft_model
             del model
             torch.cuda.empty_cache()
             gc.collect()
+            logger.info(torch.cuda.memory_summary())
+
 
     def run_experiments(self):
         
@@ -192,13 +194,14 @@ class ExperimentManager:
                 tokenizer = AutoTokenizer.from_pretrained(base_model)
                 model = AutoModelForSequenceClassification.from_pretrained(base_model)
 
-                nli_pipeline = pipeline("zero-shot-classification", 
-                                        model=model, tokenizer=tokenizer,
-                                        batch_size=2,
-                                        device= 0 if torch.cuda.is_available() else -1)
-
-                eval_df = self.eval_df.copy()
-                metrics = get_nli_model_metrics(nli_pipeline, eval_df, self.eval_entailment_thresold)
+                            ## Prepare logging metrics
+                with torch.no_grad():
+                    with pipeline("zero-shot-classification", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1) as nli_pipeline:
+                        eval_df = self.eval_df.copy()
+                        metrics = get_nli_model_metrics(nli_pipeline, eval_df, self.eval_entailment_thresold)
+                        eval_df['entailment_scores'] = metrics['scores']  
+                        eval_df['predictions'] = metrics['predictions']
+                        eval_df.to_csv(self.pred_path, index=False)
                 
                 print("metrics",metrics)
                 
@@ -235,4 +238,5 @@ class ExperimentManager:
             del model
             torch.cuda.empty_cache()
             gc.collect()
+            logger.info(torch.cuda.memory_summary())
             
