@@ -252,3 +252,11 @@ I have a few topics to discuss:
 - Regarding the East 1 migration and the creation of new branches, will we be creating a role for the feature release schema or for the role assignment feature release schema?
 
 - discuss on tach
+
+#### talking points with Bea
+ - I am developing a CI/CD pipeline to automate the deployment from development to production. It can only be tested in the new environment, which I will connect with.
+- After testing MLflow, Yujing suggested some enhancements and raised a few issues. I have been working on implementing her suggestions and fixing the issues.
+- Today, I connected with Yujing to discuss the workflow steps involved in developing an NLP use case, from fine-tuning on custom labels to backfilling and setting up the daily pipeline.
+   
+
+ - I need to get accesss to copoilat india we going
