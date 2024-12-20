@@ -103,3 +103,8 @@ By adhering to these best practices, you will create a robust, maintainable, and
 
 # Files and configuration
 Refactor the codebase by organizing it into modular files and directories, categorizing functions, constants, and configurations logically, following best software engineering practices to improve code readability, maintainability, and scalability. Additionally, determine the best locations to store these components and suggest full paths for their placement
+
+
+
+pip install git+https://github.com//Skumarr53/cnp.git@main#egg=centralized_nlp_package
+ 
