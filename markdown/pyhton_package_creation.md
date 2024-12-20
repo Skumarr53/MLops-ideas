@@ -108,3 +108,16 @@ Refactor the codebase by organizing it into modular files and directories, categ
 
 pip install git+https://github.com//Skumarr53/cnp.git@main#egg=centralized_nlp_package
  
+
+when I run 'poetry install' I get error
+No connection adapters were found for 'git+https://github.com//Skumarr53/cnp.git@main#egg=centralized_nlp_package'
+
+pip install git+https://github.com/Skumarr53/Topic-modelling-Loc.git@main#egg=topic_modelling_package
+
+
+here is my pyprojevt
+[tool.poetry.dependencies]
+python = ">=3.9, <3.12"
+centralized-nlp-package = { url = "git+https://github.com//Skumarr53/cnp.git@main#egg=centralized_nlp_package" }
+sphinx-autodoc-typehints = "^2.0"
+furo = "^2024.8.6"

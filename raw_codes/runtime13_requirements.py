@@ -1,3 +1,8 @@
+
+poetry lock --no-update && poetry install && poetry build
+
+centralized-nlp-package = { git = "https://github.com/Skumarr53/cnp.git", branch = "main" }
+
 12.2
 
 python 3.9.19
