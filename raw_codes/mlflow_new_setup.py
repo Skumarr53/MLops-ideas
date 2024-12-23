@@ -237,3 +237,22 @@ config = Config(
 
 # Execute the MLflow workflow
 manage_mlflow_workflow(config)
+
+
+def list_available_models(experiment_name, metric = "accuracy"):
+    experiment = mlflow.get_experiment_by_name(experiment_name)
+    runs = mlflow.search_runs(
+        experiment_ids=[experiment.experiment_id],
+        order_by=[f"metrics.{metric} DESC"]
+    )
+    models = []
+    for _, row in runs.iterrows():
+        models.append({
+            "run_id": row["run_id"],
+            "run_name": row["tags.mlflow.runName"],
+            "metrics": {key.replace("metrics.", ""): value for key, value in row.items() if key.startswith("metrics.")}
+        })
+    logger.info(f"Total models found: {len(models)}")
+    return models
+
+run_names = [run['run_name'] for run in runs_list]
