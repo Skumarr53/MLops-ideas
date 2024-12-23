@@ -256,3 +256,12 @@ def list_available_models(experiment_name, metric = "accuracy"):
     return models
 
 run_names = [run['run_name'] for run in runs_list]
+
+match_df_negate = match_df_v0_ref[~match_df_v0_ref['Negation'].isna()][['Subtopic', 'Negation']]#.apply(lambda x: ast.literal_eval(x['Negation']), axis=1)#.explode(column = 'Negation')
+match_df_negate = df_apply_transformations(match_df_negate, [('Negation', 'Negation', ast.literal_eval)])
+match_df_negate = match_df_negate.explode(column = 'Negation')
+match_df_negate['negate'] = True
+match_df_negate = match_df_negate.rename(columns = {'Subtopic': 'label', 'Negation': 'match'})
+match_df_ref['negate'] = False
+match_df_ref = match_df_ref.rename(columns={'Subtopic':'label', 'Refined Keywords':'match'})
+match_df_ref = pd.concat([match_df_ref, match_df_negate])
