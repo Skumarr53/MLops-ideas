@@ -496,3 +496,118 @@ for topic, group in grouped:
 
 # COMMAND ----------
 
+## Refactored
+
+import os
+import pandas as pd
+import torch
+from transformers import pipeline
+from sklearn.metrics import classification_report
+from pathlib import Path
+import yaml
+import logging
+
+# Setup Logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+# Load Configurations
+def load_config(config_path="config.yaml"):
+    with open(config_path, "r") as file:
+        return yaml.safe_load(file)
+
+CONFIG = load_config()
+
+# Dependency Management
+
+def install_dependencies():
+    dependencies = [
+        "accelerate==0.27.2",
+        "datasets",
+        "sentencepiece",
+        "scipy",
+        "scikit-learn",
+        "protobuf",
+        "transformers==4.28.0",
+        "evaluate",
+        "thefuzz"
+    ]
+    for package in dependencies:
+        os.system(f"pip install {package}")
+
+# install_dependencies()
+
+# Utility Functions
+
+def init_pipeline(model_path, device):
+    return pipeline("zero-shot-classification", model=model_path, device=device)
+
+def load_data(file_path):
+    try:
+        return pd.read_csv(file_path)
+    except FileNotFoundError:
+        logging.error(f"File not found: {file_path}")
+        return None
+
+def save_data(df, output_path):
+    df.to_csv(output_path, index=False)
+    logging.info(f"Saved results to {output_path}")
+
+# Scoring and Labeling
+
+def get_sent_score(sentence):
+    if 'neutral' in sentence:
+        return 0
+    elif 'positive' in sentence:
+        return 1
+    else:
+        return -1
+
+def get_max_label(row, neutral_col, positive_col, negative_col):
+    if row[neutral_col] >= row[positive_col] and row[neutral_col] >= row[negative_col]:
+        return 0
+    elif row[positive_col] >= row[neutral_col] and row[positive_col] >= row[negative_col]:
+        return 1
+    else:
+        return -1
+
+# Evaluation
+
+def evaluate_model(pipeline, test_data, sentiment_template):
+    for label in ["positive", "neutral", "negative"]:
+        test_data[f"{label}_score"] = test_data["sentence1"].apply(
+            lambda x: pipeline(x, f"This text has the {label} sentiment.", hypothesis_template=sentiment_template, multi_label=True)['scores'][0]
+        )
+    
+    test_data['predicted_label'] = test_data.apply(
+        lambda row: get_max_label(row, "neutral_score", "positive_score", "negative_score"), axis=1
+    )
+    return test_data
+
+# Main Processing
+
+def main():
+    # Load test data
+    test_data_path = CONFIG['data']['test_file']
+    test_data = load_data(test_data_path)
+    if test_data is None:
+        return
+
+    # Load model and pipeline
+    model_path = CONFIG['model']['path']
+    device = 0 if torch.cuda.is_available() else -1
+    sentiment_pipeline = init_pipeline(model_path, device)
+
+    # Evaluate model
+    test_data = evaluate_model(sentiment_pipeline, test_data, CONFIG['templates']['sentiment'])
+
+    # Save results
+    output_path = CONFIG['data']['output_file']
+    save_data(test_data, output_path)
+
+    # Generate classification report
+    target_names = ['negative', 'neutral', 'positive']
+    report = classification_report(test_data['voya_label'], test_data['predicted_label'], target_names=target_names)
+    logging.info("Classification Report:\n" + report)
+
+if __name__ == "__main__":
+    main()
