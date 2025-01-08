@@ -35,18 +35,18 @@ for topic, matrix in topic_conf_matrices.items():
 
 
 
-# A **confusion matrix** is a performance measurement tool for classification models. It compares the actual outcomes (ground truth) with the predicted outcomes. It provides the following values:
+# A confusion matrix is a performance measurement tool for classification models. It compares the actual outcomes (ground truth) with the predicted outcomes. It provides the following values:
 
-# *   **True Positives (TP)**: Correctly predicted positive cases (e.g., Entailment).
-# *   **True Negatives (TN)**: Correctly predicted negative cases (e.g., Not Entailment).
-# *   **False Positives (FP)**: Incorrectly predicted positive cases (e.g., predicted Entailment when it should be Not Entailment).
-# *   **False Negatives (FN)**: Incorrectly predicted negative cases (e.g., predicted Not Entailment when it should be Entailment).
+# True Positives (TP): Correctly predicted positive cases (Entailment).
+# True Negatives (TN): Correctly predicted negative cases (Not Entailment).
+# False Positives (FP): Incorrectly predicted positive cases (predicted Entailment when it should be Not Entailment).
+# False Negatives (FN): Incorrectly predicted negative cases (predicted Not Entailment when it should be Entailment).
 
 # ### Interpretation:
 
-# *   **High TP** and **high TN** indicate good model performance.
-# *   **Low FP** and **low FN** indicate fewer mistakes.
-# *   The matrix helps to identify areas where the model needs improvement, like incorrectly predicting Entailment or Not Entailment.
+High TP and high TN indicate good model performance.
+Low FP and low FN indicate fewer mistakes.
+The matrix helps to identify areas where the model needs improvement, like incorrectly predicting Entailment or Not Entailment.
 
 # This summary allows stakeholders to quickly grasp the accuracy and reliability of the model's predictions.
 # Based on the confusion matrices, the model generally performs well with high accuracy in predicting entailment and non-entailment labels across topics. 
