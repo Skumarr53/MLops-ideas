@@ -14,6 +14,7 @@
   - Giev back drop of NLI model on which model was used. Automate 
   - add a screenshot for following
     - used parameters in the experimentation
+<<<<<<< HEAD
     - link for experimentation and customization 
 - add link to latest MLFlow experiment
    - and 
@@ -27,3 +28,19 @@ https://pages.github.voya.net/Voya/data-science-nlp-centralized-nlp-package/_bui
 
 
 https://adb-2762743938046900.0.azuredatabricks.net/ml/experiments/4009146671706400?o=2762743938046900
+=======
+    - link for experimentation and talk on the customization especially how hard it is to tranformer models. take the original code and managable 
+    - mention in-depth analysis where model doing logging artifacts
+    - productionizing the model how easy it is to productionize 
+
+  Topic modelling packages
+   - This another where I am working. 
+   - I am working on a package to make it easy to use topic modelling.
+   - wht publish as package needed? 
+   - It should be user friendly 
+   - rather than having lenthgy docmenttion we looked option web based interactive for best user experience like popular packages maintaining such as pandas numpy etc.  
+   - https://pages.github.voya.net/Voya/data-science-nlp-centralized-nlp-package/_build/html/index.html
+   - I will use the same to give overview code refactoring  
+  
+  
+>>>>>>> 17f3e0e (dsfhdgf)
