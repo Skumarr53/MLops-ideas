@@ -384,3 +384,10 @@ Let me know if you need help implementing specific parts!
 ### Communicate with team
 
 In our NLI model, instead of using binary labels (e.g., "entailment" vs. "non-entailment"), we propose assigning each sentence pair a continuous score between 0 and 1 that represents the degree of semantic association. By employing a regression-based approach—replacing the classification head with a single scalar output and using an appropriate loss function such as mean squared error—we can capture more nuanced relationships between text pairs, enabling the model to learn subtle distinctions that would otherwise be lost in a strict classification setting.
+
+
+
+For some reason below query outputs 0 reco
+
+
+"select TOP 100 CALL_ID,ENTITY_ID, FILT_MD, FILT_QA, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA, CALL_NAME,COMPANY_NAME,EARNINGS_CALL,ERROR,TRANSCRIPT_STATUS,UPLOAD_DT_UTC,VERSION_ID,EVENT_DATETIME_UTC,PARSED_DATETIME_EASTERN_TZ from EDS_PROD.QUANT_LIVE.CTS_FUND_COMBINED_SCORES_H t2 where not exists (select 1 from EDS_PROD.QUANT.PARTHA_MACRO_INNO_CTS_STG_1 t1 where  t1.CALL_ID = CAST(t2.CALL_ID AS VARCHAR(16777216)) and t1.ENTITY_ID = t2.ENTITY_ID and t1.VERSION_ID = t2.VERSION_ID) ORDER BY PARSED_DATETIME_EASTERN_TZ DESC;

@@ -14,7 +14,6 @@
   - Giev back drop of NLI model on which model was used. Automate 
   - add a screenshot for following
     - used parameters in the experimentation
-<<<<<<< HEAD
     - link for experimentation and customization 
 - add link to latest MLFlow experiment
    - and 
@@ -24,11 +23,11 @@ https://pages.github.voya.net/Voya/data-science-nlp-centralized-nlp-package/_bui
 
 
 
+Collate all the code logic in the existing pipelines and refactor them in well structured code.
 
 
 
 https://adb-2762743938046900.0.azuredatabricks.net/ml/experiments/4009146671706400?o=2762743938046900
-=======
     - link for experimentation and talk on the customization especially how hard it is to tranformer models. take the original code and managable 
     - mention in-depth analysis where model doing logging artifacts
     - productionizing the model how easy it is to productionize 
@@ -43,4 +42,3 @@ https://adb-2762743938046900.0.azuredatabricks.net/ml/experiments/40091466717064
    - I will use the same to give overview code refactoring  
   
   
->>>>>>> 17f3e0e (dsfhdgf)
