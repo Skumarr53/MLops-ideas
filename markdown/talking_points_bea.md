@@ -259,4 +259,12 @@ I have a few topics to discuss:
 - Today, I connected with Yujing to discuss the workflow steps involved in developing an NLP use case, from fine-tuning on custom labels to backfilling and setting up the daily pipeline.
    
 
- - I need to get accesss to copoilat india we going
+
+- updates 
+
+- I have completed refacted pipeline notebook modelling usecase compared with origina output that i shared few min back. I am doing similar comparision exverise for nli inferece usecase   
+- the mlflow memeory has been resolved innthe updated code  and yujing  
+- i am updated the packages with few few additianal funtions that yujing shared and updating  package documentation for the new function that we added recelty in the mlflow utils  and yujing one 
+- coming to comsumer topic, yesturday. I spoke to josh, he ask me run new iteration with couple of chages 
+  - add netural sentences to the existing finetuning set to match out od sample/ real dataset distribution.
+  - try fintuning with lower learning rates 
