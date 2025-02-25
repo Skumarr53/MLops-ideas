@@ -261,6 +261,7 @@ def matchTokenize(doc):
             ret.append(ent.lemma_.lower())
     return ret
 
+
 def find_ngrams(input_list, n):
     return zip(*[input_list[i:] for i in range(n)])
 
