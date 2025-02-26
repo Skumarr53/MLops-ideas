@@ -248,3 +248,5 @@ df = df.map_partitions(apply_func_to_partition, meta={new_column: 'object'})
 
 
 lambda partition: partition[old_column].apply(func), meta=(new_column, object)
+
+df[new_column] = df.map_partitions(lambda partition: partition.apply(func, axis=1), meta=(new_column, object))
