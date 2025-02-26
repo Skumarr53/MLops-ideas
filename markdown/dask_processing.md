@@ -245,3 +245,6 @@ def apply_func_to_partition(partition):
     return partition
 
 df = df.map_partitions(apply_func_to_partition, meta={new_column: 'object'})
+
+
+lambda partition: partition[old_column].apply(func), meta=(new_column, object)
