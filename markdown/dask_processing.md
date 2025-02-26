@@ -233,3 +233,15 @@ print(result)
 ---
 
 For more in-depth details on the integration, check out the [dask-spark GitHub repository](citedask-spark2025).
+
+
+
+
+import dask.dataframe as dd
+
+# Assuming df is a Dask DataFrame
+def apply_func_to_partition(partition):
+    partition[new_column] = partition[old_column].apply(func)
+    return partition
+
+df = df.map_partitions(apply_func_to_partition, meta={new_column: 'object'})
