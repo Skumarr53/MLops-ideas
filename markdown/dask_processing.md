@@ -250,3 +250,117 @@ df = df.map_partitions(apply_func_to_partition, meta={new_column: 'object'})
 lambda partition: partition[old_column].apply(func), meta=(new_column, object)
 
 df[new_column] = df.map_partitions(lambda partition: partition.apply(func, axis=1), meta=(new_column, object))
+
+------------
+def generate_topic_report(
+    df: pd.DataFrame,
+    word_set_dict: Dict[str, Any],
+    negate_dict: Dict[str, List[str]],
+    nlp: spacy.Language,
+    stats_list: List[str],
+    phrases: bool = False,
+    dask_partitions: int = 4,
+    label_column: str = "matches",
+) -> pd.DataFrame:
+    """
+    Generates topic-specific columns for selected statistics.
+
+    This function applies transformations to the DataFrame based on the provided statistics list.
+    Supported statistics include:
+        - 'total': Total counts of matches.
+        - 'stats': Detailed statistics of matches.
+        - 'relevance': Relevance scores.
+        - 'count': Count of matches.
+        - 'extract': Extracted matches.
+        - 'sentiment': Sentiment analysis results.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the data to be processed.
+        word_set_dict (Dict[str, Any]): Dictionary of word sets for different topics.
+        negate_dict (Dict[str, List[str]]): Dictionary for negation handling.
+        stats_list (List[str]): List of statistic identifiers to compute. Supported:
+            ['total', 'stats', 'relevance', 'count', 'extract', 'sentiment']
+        label_column (str, optional): Prefix for match labels in the DataFrame. Defaults to "matches".
+
+    Returns:
+        pd.DataFrame: Updated DataFrame with additional report columns for each topic and selected statistics.
+    
+    Raises:
+        ValueError: If an unsupported statistic identifier is provided in stats_list.
+
+    Example:
+        >>> import pandas as pd
+        >>> data = {
+        ...     'matches_FILT_MD': [['good', 'bad'], ['good']],
+        ...     'matches_FILT_QA': [['excellent', 'poor'], ['average']],
+        ...     'FILT_MD': ['some text', 'other text'],
+        ...     'FILT_QA': ['additional text', 'more text']
+        ... }
+        >>> df = pd.DataFrame(data)
+        >>> word_set_dict = {
+        ...     'POSITIVE': {'original': ['good'], 'unigrams': {'good'}, 'bigrams': {'good_service'}, 'phrases': []},
+        ...     'NEGATIVE': {'original': ['bad'], 'unigrams': {'bad'}, 'bigrams': {'bad_service'}, 'phrases': []}
+        ... }
+        >>> negate_dict = {
+        ...     'POSITIVE': ['not good'],
+        ...     'NEGATIVE': ['not bad']
+        ... }
+        >>> stats_list = ['total', 'count']
+        >>> report_df = generate_topic_report(df, word_set_dict, negate_dict, stats_list)
+        >>> print(report_df.columns)
+        Index(['matches_FILT_MD', 'matches_FILT_QA', 'FILT_MD', 'FILT_QA', 
+               'POSITIVE_TOTAL_FILT_MD', 'POSITIVE_COUNT_FILT_MD', 
+               'NEGATIVE_TOTAL_FILT_MD', 'NEGATIVE_COUNT_FILT_MD', 
+               'POSITIVE_TOTAL_FILT_QA', 'POSITIVE_COUNT_FILT_QA', 
+               'NEGATIVE_TOTAL_FILT_QA', 'NEGATIVE_COUNT_FILT_QA'], 
+              dtype='object')
+    """
+    # Validate stats_list
+    unsupported_stats = set(stats_list) - set(STATISTICS_MAP.keys())
+    if unsupported_stats:
+        raise ValueError(f"Unsupported statistics requested: {unsupported_stats}")
+    
+    count_matches_in_single_sentence_par = partial(count_matches_in_single_sentence, match_sets = word_set_dict, nlp = nlp, phrases = phrases, suppress=negate_dict)
+    # client = Client(dashboard_address=':8787', n_workers=8, processes=True, threads_per_worker=1)
+
+    ## convert to dataframe to Dask dataframe
+    # df = dd.from_pandas(df, npartitions = dask_partitions)
+
+    # Initial transformations: match counts
+    labels = ["FILT_MD", "FILT_QA"]
+    lab_sec_dict1 = [
+        (f"{label_column}_{lab}", lab, count_matches_in_single_sentence_par) #lambda x: count_matches_in_single_sentence(x, match_sets = word_set_dict, nlp = nlp, phrases = phrases, suppress=negate_dict))
+        for lab in labels
+    ]
+
+    logger.info("Applying initial match count transformations.")
+    # df = df_apply_transformations(df, lab_sec_dict1)
+
+    with mp.Pool(min(mp.cpu_count(), dask_partitions)) as pool:
+        for lab in labels:
+            df[f"{label_column}_{lab}"] = pool.map(count_matches_in_single_sentence_par, df[lab])
+
+    # with ProgressBar():
+    # df = df.compute(scheduler='processes')
+
+    # Iterate over labels and topics to apply selected statistics
+    for label in labels:
+        # df['matches_' + label] = df['matches_' + label].apply(ast.literal_eval)
+        for topic in word_set_dict.keys():
+            lab_sec_dict2 = []
+            for stat in stats_list:
+                transformation_func = STATISTICS_MAP.get(stat)
+                if transformation_func:
+                    lab_sec_dict2.append(transformation_func(topic, label, label_column))
+                else:
+                    logger.warning(f"Statistic '{stat}' not found in STATISTICS_MAP.")
+            if lab_sec_dict2:
+                logger.info(f"Applying transformations for topic '{topic}' and label '{label}'.")
+                df = df_apply_transformations(df, lab_sec_dict2)
+
+    # Drop intermediate match columns
+    intermediate_cols = [f"{label_column}_{label}" for label in labels]
+    df.drop(columns=intermediate_cols, inplace=True, errors='ignore')
+    logger.info(f"Dropped intermediate match columns: {intermediate_cols}")
+
+    return df
