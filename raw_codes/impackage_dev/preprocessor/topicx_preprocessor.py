@@ -77,7 +77,7 @@ class TopicXPreprocessor(TextPreprocessor):
   
   def word_tokenizer(self, doc):
     """
-    tokenizes document text into list of words by removing stop words and numbers
+    tokenizes document text into list of words by removing stop w ords and numbers
     
     Parameters:
     argument1 (str): text document

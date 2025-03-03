@@ -57,6 +57,8 @@ import pytz
 from datetime import datetime
 from datetime import timedelta
 
+from centralized_nlp_package.data_processing import calculate_significant_duplicates
+from centralized_nlp_package.text_processing import sentence_tokenizer
 
 
 
@@ -129,6 +131,13 @@ for label,section in config.FILT_labels.items():
       currdf[label] = currdf[section].apply(lambda x: topicx_preprocessor.sentence_tokenizer(x))
 
 
+## Refactored 
+sent_tokenizer = English()
+sent_tokenizer.add_pipe("sentencizer")
+
+ for section in ['FILT_MD','FILT_QA']:
+    currdf[section] = currdf[section].apply(lambda x: sentence_tokenizer(x, sent_tokenizer))
+
 # COMMAND ----------
 
 # DBTITLE 1,Create DFUtils Object
@@ -138,7 +147,6 @@ df_utils=DFUtils()
 
 # DBTITLE 1,Get % of Duplicate text in the sentences.
 currdf=df_utils.df_get_percentage_of_duplicate_text_in_sentence_list(currdf)
-
 # COMMAND ----------
 
 # DBTITLE 1,Add 1 to Colmn of Duplicate % is > than Threshold.
@@ -146,6 +154,9 @@ for label in config.FILT_sections:
   currdf["SIGNIFICANT_DUPLICATE_"+label]=currdf["SIGNIFICANT_DUPLICATE_"+label].apply(lambda x:1 if x>config.duplication_threshold else 0)
 
 # COMMAND ----------
+
+
+calculate_significant_duplicates(currdf, config.FILT_sections, config.duplication_threshold)
 
 currdf.head(2)
 
