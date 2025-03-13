@@ -117,3 +117,49 @@ roc-code
         ]
 
 ```
+
+
+updated:
+---------
+
+```
+from sklearn.metrics import roc_curve, auc, precision_score, recall_score
+# Calculate ROC curve and ROC area
+fpr, tpr, thresholds = roc_curve(y_true, y_scores, pos_label=positive_class)
+roc_auc = auc(fpr, tpr)
+results['roc_auc'] = roc_auc
+# Plot ROC curve
+ax1.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.3f})')
+ax1.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+ax1.set_xlim([0.0, 1.0])
+ax1.set_ylim([0.0, 1.05])
+ax1.set_xlabel('False Positive Rate')
+ax1.set_ylabel('True Positive Rate')
+ax1.set_title(f'ROC curve {run_name}')
+ax1.legend(loc="lower right")
+# Find optimal threshold using Youden's J statistic
+j_scores = tpr - fpr
+optimal_idx = np.argmax(j_scores)
+optimal_threshold = thresholds[optimal_idx]
+results['optimal_threshold'] = optimal_threshold
+# Calculate precision and recall at the optimal threshold
+y_pred_optimal = (y_scores >= optimal_threshold).astype(int)
+precision = precision_score(y_true, y_pred_optimal, pos_label=positive_class)
+recall = recall_score(y_true, y_pred_optimal, pos_label=positive_class)
+# Mark the optimal threshold on the plot
+ax1.plot(fpr[optimal_idx], tpr[optimal_idx], 'ro', 
+         label=f'Optimal threshold = {optimal_threshold:.3f}')
+ax1.legend(loc="lower right")
+# Add a table with key metrics
+table_text = [
+    f"AUC: {roc_auc:.3f}",
+    f"Optimal threshold: {optimal_threshold:.3f}",
+    f"TPR at optimal: {tpr[optimal_idx]:.3f}",
+    f"FPR at optimal: {fpr[optimal_idx]:.3f}",
+    f"Precision at optimal: {precision:.3f}",
+    f"Recall at optimal: {recall:.3f}"
+]
+# Optionally, you can display the table text on the plot or print it
+for i, text in enumerate(table_text):
+    ax1.text(0.05, 0.95 - i * 0.05, text, transform=ax1.transAxes, fontsize=10, verticalalignment='top')
+```
