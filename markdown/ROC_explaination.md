@@ -77,3 +77,43 @@ I have uploaded two images featuring ROC curve plots and other metrics from two 
 3. **Would you benefit from additional calibration or threshold tuning strategies?**  
 
 By focusing on these areas, you can refine each model’s performance further and choose the one that best meets your project’s requirements.
+
+roc-code
+
+```
+
+        # Calculate ROC curve and ROC area
+        fpr, tpr, thresholds = roc_curve(y_true, y_scores, pos_label=positive_class)
+        roc_auc = auc(fpr, tpr)
+        results['roc_auc'] = roc_auc
+        
+        # Plot ROC curve
+        ax1.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.3f})')
+        ax1.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+        ax1.set_xlim([0.0, 1.0])
+        ax1.set_ylim([0.0, 1.05])
+        ax1.set_xlabel('False Positive Rate')
+        ax1.set_ylabel('True Positive Rate')
+        ax1.set_title(f'ROC curve {run_name}')
+        ax1.legend(loc="lower right")
+        
+        # Find optimal threshold using Youden's J statistic
+        j_scores = tpr - fpr
+        optimal_idx = np.argmax(j_scores)
+        optimal_threshold = thresholds[optimal_idx]
+        results['optimal_threshold'] = optimal_threshold
+        
+        # Mark the optimal threshold on the plot
+        ax1.plot(fpr[optimal_idx], tpr[optimal_idx], 'ro', 
+                 label=f'Optimal threshold = {optimal_threshold:.3f}')
+        ax1.legend(loc="lower right")
+        
+        # Add a table with key metrics
+        table_text = [
+            f"AUC: {roc_auc:.3f}",
+            f"Optimal threshold: {optimal_threshold:.3f}",
+            f"TPR at optimal: {tpr[optimal_idx]:.3f}",
+            f"FPR at optimal: {fpr[optimal_idx]:.3f}"
+        ]
+
+```
