@@ -48,3 +48,6 @@ def create_speaker_identifier_with_fuzzy(row, threshold=80):
             else:
                 speaker_identifier.append('NA')  # If no previous speaker exists
     return speaker_identifier, na_indices
+
+
+ceo_md_cleaned + exec_md_cleaned + ceo_qa_cleaned + exec_qa_cleaned + anl_qa_cleaned
