@@ -70,3 +70,46 @@ def clean_dataframe(df):
     df['SECT_IDENTIFIER'] = df.apply(lambda row: [item for i, item in enumerate(row['SECT_IDENTIFIER']) if i not in indices_to_drop], axis=1)
     df['SPEAKER_IDENTIFIER'] = df.apply(lambda row: [item for i, item in enumerate(row['SPEAKER_IDENTIFIER']) if i not in indices_to_drop], axis=1)
     return df
+
+
+-----
+
+import pandas as pd
+def clean_dataframe(df):
+    # Initialize lists to hold the cleaned values
+    cleaned_filt_all = []
+    cleaned_sect_identifier = []
+    cleaned_speaker_identifier = []
+    # Iterate through each row of the DataFrame
+    for _, row in df.iterrows():
+        # Get the current row's values
+        filt_all = row['FILT_ALL']
+        filt_all_yuj = row['FILT_ALL_YUJ']
+        sect_identifier = row['SECT_IDENTIFIER']
+        speaker_identifier = row['SPEAKER_IDENTIFIER']
+        
+        # Create a mask for indices to keep
+        indices_to_keep = [i for i, item in enumerate(filt_all) if item in filt_all_yuj]
+        
+        # Filter the lists based on the indices to keep
+        cleaned_filt_all.append([filt_all[i] for i in indices_to_keep])
+        cleaned_sect_identifier.append([sect_identifier[i] for i in indices_to_keep])
+        cleaned_speaker_identifier.append([speaker_identifier[i] for i in indices_to_keep])
+    # Assign the cleaned lists back to the DataFrame
+    df['FILT_ALL'] = cleaned_filt_all
+    df['SECT_IDENTIFIER'] = cleaned_sect_identifier
+    df['SPEAKER_IDENTIFIER'] = cleaned_speaker_identifier
+    return df
+# Sample DataFrame for demonstration
+data = {
+    'FILT_ALL': [['Hello', 'world', 'foo'], ['bar', 'baz'], ['test', 'example']],
+    'FILT_ALL_YUJ': [['Hello', 'world'], ['bar'], ['test']],
+    'SECT_IDENTIFIER': [['sec1', 'sec2', 'sec3'], ['sec4', 'sec5'], ['sec6', 'sec7']],
+    'SPEAKER_IDENTIFIER': [['speaker1', 'speaker2', 'speaker3'], ['speaker4', 'speaker5'], ['speaker6', 'speaker7']]
+}
+df = pd.DataFrame(data)
+# Clean the DataFrame
+cleaned_df = clean_dataframe(df)
+print(cleaned_df)
+
+
