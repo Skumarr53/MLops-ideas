@@ -51,3 +51,22 @@ def create_speaker_identifier_with_fuzzy(row, threshold=80):
 
 
 ceo_md_cleaned + exec_md_cleaned + ceo_qa_cleaned + exec_qa_cleaned + anl_qa_cleaned
+
+
+------
+
+import pandas as pd
+def clean_dataframe(df):
+    # Create a mask to identify indices where FILT_ALL elements are not in FILT_ALL_YUJ
+    mask = df.apply(lambda row: [item not in row['FILT_ALL_YUJ'] for item in row['FILT_ALL']], axis=1)
+    
+    # Create a list of indices to drop
+    indices_to_drop = []
+    for i, row_mask in enumerate(mask):
+        indices_to_drop.extend([i for i, val in enumerate(row_mask) if val])
+    
+    # Drop the identified indices from FILT_ALL, SECT_IDENTIFIER, and SPEAKER_IDENTIFIER
+    df['FILT_ALL'] = df.apply(lambda row: [item for i, item in enumerate(row['FILT_ALL']) if i not in indices_to_drop], axis=1)
+    df['SECT_IDENTIFIER'] = df.apply(lambda row: [item for i, item in enumerate(row['SECT_IDENTIFIER']) if i not in indices_to_drop], axis=1)
+    df['SPEAKER_IDENTIFIER'] = df.apply(lambda row: [item for i, item in enumerate(row['SPEAKER_IDENTIFIER']) if i not in indices_to_drop], axis=1)
+    return df
