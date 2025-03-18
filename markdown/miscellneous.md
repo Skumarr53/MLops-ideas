@@ -138,15 +138,18 @@ This version maintains the original meaning while improving clarity and readabil
 
 
 ---
-
-df_filtered = df[df['salary'].notna()]
+df = pd.DataFrame(data)
 # Count of non-NA salaries per month
-count_per_month = df_filtered.groupby('month')['salary'].count().reset_index()
-# Total count of non-NA salaries
-total_count = df_filtered['salary'].count()
-# Calculate percentage
-count_per_month['percentage'] = (count_per_month['salary'] / total_count) * 100
+count_per_month = df.groupby('month')['salary'].count().reset_index()
+# Total count of salaries per month (including NaN)
+total_per_month = df.groupby('month')['salary'].size().reset_index(name='total_count')
+# Merge the two DataFrames on month
+result = pd.merge(count_per_month, total_per_month, on='month')
+# Calculate percentage of non-missing salaries
+result['percentage'] = (result['salary'] / result['total_count']) * 100
 # Rename columns for clarity
-count_per_month.rename(columns={'salary': 'count'}, inplace=True)
+result.rename(columns={'salary': 'count'}, inplace=True)
 # Display the results
-print(count_per_month)
+print(result[['month', 'count', 'total_count', 'percentage']])
+
+I have df with month and salary columns.  I want to get count agg of salary in each month that are not na and percent of non missing salaries for each month. give me pyhton code
