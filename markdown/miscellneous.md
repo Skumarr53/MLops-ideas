@@ -139,14 +139,14 @@ This version maintains the original meaning while improving clarity and readabil
 
 ---
 
-SELECT 
-    CONCAT(YEAR, '-', LPAD(MONTH, 2, '0')) AS YEAR_MONTH,  -- Concatenates YEAR and MONTH
-    COUNT(SALARY) AS Monthly_Count  -- Counts non-null SALARY entries
-FROM 
-    your_table
-WHERE 
-    SALARY IS NOT NULL  -- Filters out null SALARY values
-GROUP BY 
-    YEAR, MONTH  -- Groups by YEAR and MONTH to get monthly counts
-ORDER BY 
-    YEAR_MONTH; 
+df_filtered = df[df['salary'].notna()]
+# Count of non-NA salaries per month
+count_per_month = df_filtered.groupby('month')['salary'].count().reset_index()
+# Total count of non-NA salaries
+total_count = df_filtered['salary'].count()
+# Calculate percentage
+count_per_month['percentage'] = (count_per_month['salary'] / total_count) * 100
+# Rename columns for clarity
+count_per_month.rename(columns={'salary': 'count'}, inplace=True)
+# Display the results
+print(count_per_month)
