@@ -135,3 +135,18 @@ Finally, for each approach, we experimented with several learning rates to evalu
 --- 
 
 This version maintains the original meaning while improving clarity and readability.
+
+
+---
+
+SELECT 
+    CONCAT(YEAR, '-', LPAD(MONTH, 2, '0')) AS YEAR_MONTH,  -- Concatenates YEAR and MONTH
+    COUNT(SALARY) AS Monthly_Count  -- Counts non-null SALARY entries
+FROM 
+    your_table
+WHERE 
+    SALARY IS NOT NULL  -- Filters out null SALARY values
+GROUP BY 
+    YEAR, MONTH  -- Groups by YEAR and MONTH to get monthly counts
+ORDER BY 
+    YEAR_MONTH; 
