@@ -153,3 +153,9 @@ result.rename(columns={'salary': 'count'}, inplace=True)
 print(result[['month', 'count', 'total_count', 'percentage']])
 
 I have df with month and salary columns.  I want to get count agg of salary in each month that are not na and percent of non missing salaries for each month. give me pyhton code
+
+
+
+
+
+Bea, just a quick update on the issue. After fixing the Reminton code, we backfilled the Linkup table using the updated code. Since the data in the Linkup table has been updated, we should also perform a historical backfill for mass labor income, as the source data has changed. It seems that either something was missing during the backfilling of this table, or it was backfilled but accidentally overwritten with the old data.
