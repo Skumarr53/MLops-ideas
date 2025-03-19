@@ -138,19 +138,20 @@ This version maintains the original meaning while improving clarity and readabil
 
 
 ---
+
+
+data = {
+    'YEAR_MONTH': ['2023-01', '2023-01', '2023-02', '2023-02', '2023-03'],
+    'AVERAGE_SALARY': [5000, None, 6000, 7000, None],
+    'COUNTS': [10, 5, 15, 10, 20]
+}
 df = pd.DataFrame(data)
-# Count of non-NA salaries per month
-count_per_month = df.groupby('month')['salary'].count().reset_index()
-# Total count of salaries per month (including NaN)
-total_per_month = df.groupby('month')['salary'].size().reset_index(name='total_count')
-# Merge the two DataFrames on month
-result = pd.merge(count_per_month, total_per_month, on='month')
-# Calculate percentage of non-missing salaries
-result['percentage'] = (result['salary'] / result['total_count']) * 100
-# Rename columns for clarity
-result.rename(columns={'salary': 'count'}, inplace=True)
-# Display the results
-print(result[['month', 'count', 'total_count', 'percentage']])
+# Group by YEAR_MONTH and aggregate
+result = df.groupby('YEAR_MONTH').agg(
+    non_missing_count=('AVERAGE_SALARY', lambda x: x.notnull().sum()),
+    total_counts=('COUNTS', 'sum')
+).reset_index()
+
 
 I have df with month and salary columns.  I want to get count agg of salary in each month that are not na and percent of non missing salaries for each month. give me pyhton code
 
@@ -159,3 +160,7 @@ I have df with month and salary columns.  I want to get count agg of salary in e
 
 
 Bea, just a quick update on the issue. After fixing the Reminton code, we backfilled the Linkup table using the updated code. Since the data in the Linkup table has been updated, we should also perform a historical backfill for mass labor income, as the source data has changed. It seems that either something was missing during the backfilling of this table, or it was backfilled but accidentally overwritten with the old data.
+
+
+
+Hi Josh, To provide further feedback on the new model's performance, I will share time series aggregated data from 2020 to 2024, focusing on the companies in discretionary and staples industries falling in top Russell 1500 and 3000. These metrics are the same as I provided last time. Is there anything else you need from me? I just want to ensure I don’t miss anything.
