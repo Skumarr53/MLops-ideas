@@ -156,8 +156,9 @@ result = df.groupby('YEAR_MONTH').agg(
 I have df with month and salary columns.  I want to get count agg of salary in each month that are not na and percent of non missing salaries for each month. give me pyhton code
 
 
+Hi Richard, 
 
-validation plots comparing inconsistencies in the old data with the updated data after the fix? informing him that we've validated it on our end and request his validation as well.
+I am writing to inform you that we fixed the issue and written updated data into below new table. We validated new data from out end and attaching below validation plots taht  compares inconsistencies in the old data with the updated data after the fix? we appriciate if you could validation as well and provide feedback.
  
 
 
@@ -168,3 +169,13 @@ Bea, just a quick update on the issue. After fixing the Reminton code, we backfi
 
 
 Hi Josh, To provide further feedback on the new model's performance, I will share time series aggregated data from 2020 to 2024, focusing on the companies in discretionary and staples industries falling in top Russell 1500 and 3000. These metrics are the same as I provided last time. Is there anything else you need from me? I just want to ensure I don’t miss anything.
+
+
+
+Hi Richard,
+
+I hope this message finds you well. I wanted to let you know that we have resolved the issue and updated the data in the new table below. We have validated the new data on our end and are attaching validation plots that compare the inconsistencies in the old data with the updated data after the fix. 
+
+We would appreciate it if you could review the data as well and provide your feedback.
+
+Thank you!
