@@ -157,6 +157,10 @@ I have df with month and salary columns.  I want to get count agg of salary in e
 
 
 
+validation plots comparing inconsistencies in the old data with the updated data after the fix? informing him that we've validated it on our end and request his validation as well.
+ 
+
+
 
 
 Bea, just a quick update on the issue. After fixing the Reminton code, we backfilled the Linkup table using the updated code. Since the data in the Linkup table has been updated, we should also perform a historical backfill for mass labor income, as the source data has changed. It seems that either something was missing during the backfilling of this table, or it was backfilled but accidentally overwritten with the old data.
