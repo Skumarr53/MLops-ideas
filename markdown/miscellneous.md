@@ -179,3 +179,18 @@ I hope this message finds you well. I wanted to let you know that we have resolv
 We would appreciate it if you could review the data as well and provide your feedback.
 
 Thank you!
+
+--------
+
+Subject: Request for Query History and Investigation on Table Updates
+
+Hello Snowflake Support Team,
+
+We’ve encountered a data inconsistency issue with our MY_DB.MY_SCHEMA.MY_TABLE. Some updates seem to have been overwritten or never applied, resulting in incorrect query results. We’d like to investigate the specific queries that modified this table over the past week, but we currently do not have access to SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY.
+
+Could you please Provide a log of all queries (INSERT, UPDATE, DELETE, MERGE, COPY, etc.) against MY_DB.MY_SCHEMA.MY_TABLE from 2024-12-01 to 2025-01-10.
+
+
+We appreciate your prompt assistance and any additional guidance on diagnosing this issue. Feel free to let us know if further details are needed.
+
+Thank you,
