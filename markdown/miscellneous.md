@@ -194,3 +194,17 @@ Could you please Provide a log of all queries (INSERT, UPDATE, DELETE, MERGE, CO
 We appreciate your prompt assistance and any additional guidance on diagnosing this issue. Feel free to let us know if further details are needed.
 
 Thank you,
+
+
+-----------
+
+
+Hi Josh,
+
+1. The aggregated results for companies in the discretionary and staples industries within the top Russell 1500 and 3000 are ready. Since you want to compare the new model's results with similar metrics from the previous model, please let me know your preferred way to share the results:
+   - Present the current iteration results in a separate table
+   - Combine the results in the existing tables, with the new aggregated results columns suffixed with _new and the previous aggregated results columns as _old
+
+Which option would be easier for you to read and compare?
+
+2. Regarding the aggregated results for all companies, would you like to compare the new model's results with similar metrics from the previous model, or would you prefer to analyze them individually? In the last iteration, we did not share the aggregated results for all companies. If you also need the aggregated results from the previous model, we will need to generate those metrics.
