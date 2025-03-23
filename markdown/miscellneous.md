@@ -208,3 +208,42 @@ Hi Josh,
 Which option would be easier for you to read and compare?
 
 2. Regarding the aggregated results for all companies, would you like to compare the new model's results with similar metrics from the previous model, or would you prefer to analyze them individually? In the last iteration, we did not share the aggregated results for all companies. If you also need the aggregated results from the previous model, we will need to generate those metrics.
+
+
+
+
+Hi Bea, 
+
+This is Santhosh for voya india
+
+I wanted to let you know that 10 min after meeting my voya account was revoked again and lost access to my work. Hopefully, access will be restored by monday. if issue still persist I will inform you.
+
+
+
+------------
+
+import mlflow
+import mlflow.pyfunc
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+# Set the MLflow tracking URI if needed
+# mlflow.set_tracking_uri("http://your_mlflow_server:5000")
+# Specify the experiment ID or run ID from which you want to load the model
+experiment_id = "your_experiment_id"
+run_id = "your_run_id"
+# Load the model as a PyFunc model
+model_uri = f"runs:/{run_id}/model"  # Adjust the path if your model is saved under a different name
+loaded_model = mlflow.pyfunc.load_model(model_uri)
+# If your model is a transformer model, you might need to load the tokenizer and model separately
+# Assuming the model is saved as a Hugging Face transformer model
+model_name = "your_model_name"  # Replace with the actual model name or path
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+transformer_model = AutoModelForSequenceClassification.from_pretrained(model_name)
+# Example usage of the loaded model for inference
+def predict(input_text):
+    inputs = tokenizer(input_text, return_tensors="pt")
+    outputs = transformer_model(**inputs)
+    return outputs
+# Example prediction
+input_text = "This is a test input."
+prediction = predict(input_text)
+print(prediction)
