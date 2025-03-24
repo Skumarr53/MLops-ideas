@@ -247,3 +247,39 @@ def predict(input_text):
 input_text = "This is a test input."
 prediction = predict(input_text)
 print(prediction)
+
+----
+
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+# Initialize Spark session
+spark = SparkSession.builder \
+    .appName("Merge Old and New Results") \
+    .getOrCreate()
+# Sample DataFrames (replace these with your actual DataFrames)
+# old_results = spark.read.format("your_format").load("path_to_old_results")
+# new_results = spark.read.format("your_format").load("path_to_new_results")
+# Example DataFrames for demonstration
+old_data = [(1, "A", 100), (2, "B", 200)]
+new_data = [(1, "A", 150), (2, "B", 250), (3, "C", 300)]
+# Assuming primary keys are (primary_key1, primary_key2)
+old_results = spark.createDataFrame(old_data, ["primary_key1", "primary_key2", "result"])
+new_results = spark.createDataFrame(new_data, ["primary_key1", "primary_key2", "result"])
+# Define primary key columns
+primary_keys = ["primary_key1", "primary_key2"]
+# Merge DataFrames on primary keys
+merged_df = old_results.join(new_results, on=primary_keys, how="outer")
+# Rename result columns
+for column in old_results.columns:
+    if column not in primary_keys:
+        merged_df = merged_df.withColumnRenamed(column, f"{column}_old")
+for column in new_results.columns:
+    if column not in primary_keys:
+        merged_df = merged_df.withColumnRenamed(column, f"{column}_new")
+# Show the result
+merged_df.show()
+# Stop Spark session
+spark.stop()
+# Stop Spark session
+spark.stop()
