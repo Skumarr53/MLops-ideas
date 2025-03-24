@@ -295,3 +295,67 @@ spark.stop()
 'REDUCED_CONSUMPTION_COVERRATE_FILT_AVERAGE_OLD',
 'INCREASED_CONSUMPTION_REL_FILT_AVERAGE_OLD',
 'REDUCED_CONSUMPTION_REL_FILT_AVERAGE_OLD'
+
+
+-------------
+
+
+I hope this message finds you well.
+
+I wanted to take a moment to explain the format we are using for merging the old and new results data. The merge process involves combining two datasets based on multiple primary key columns. Each dataset retains its original structure, and the result columns from the old dataset are suffixed with "_old," while those from the new dataset are suffixed with "_new." This approach allows us to clearly distinguish between the old and new results while maintaining the integrity of the primary keys.
+
+For example, if we have primary keys such as "primary_key1" and "primary_key2," the merged dataset will include these keys along with the results from both datasets, clearly labeled to avoid confusion.
+
+If you have any questions or need further clarification, please feel free to reach out.
+
+Best regards,
+
+[Your Name]
+[Your Position]
+[Your Contact Information]
+
+-----------------
+
+import pandas as pd
+import matplotlib.pyplot as plt
+# Sample DataFrame creation for demonstration (replace this with your actual DataFrame)
+# df = pd.read_csv('your_data.csv')  # Load your DataFrame from a CSV or other source
+# Example DataFrame for demonstration
+data = {
+    'DATE_ROLLING': pd.date_range(start='2023-01-01', periods=10, freq='D'),
+    'INCREASED_CONSUMPTION_COVERRATE_FILT_AVERAGE_NEW': [10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+    'REDUCED_CONSUMPTION_COVERRATE_FILT_AVERAGE_NEW': [5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+    'INCREASED_CONSUMPTION_REL_FILT_AVERAGE_NEW': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
+    'REDUCED_CONSUMPTION_REL_FILT_AVERAGE_NEW': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'INCREASED_CONSUMPTION_COVERRATE_FILT_AVERAGE_OLD': [8, 12, 18, 22, 28, 33, 39, 44, 48, 52],
+    'REDUCED_CONSUMPTION_COVERRATE_FILT_AVERAGE_OLD': [4, 9, 14, 19, 24, 29, 34, 39, 44, 49],
+    'INCREASED_CONSUMPTION_REL_FILT_AVERAGE_OLD': [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+    'REDUCED_CONSUMPTION_REL_FILT_AVERAGE_OLD': [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+}
+df = pd.DataFrame(data)
+# List of metrics
+metrics = [
+    'INCREASED_CONSUMPTION_COVERRATE_FILT_AVERAGE',
+    'REDUCED_CONSUMPTION_COVERRATE_FILT_AVERAGE',
+    'INCREASED_CONSUMPTION_REL_FILT_AVERAGE',
+    'REDUCED_CONSUMPTION_REL_FILT_AVERAGE'
+]
+# Create subplots
+fig, axs = plt.subplots(len(metrics), 1, figsize=(10, 15), sharex=True)
+# Plot each metric
+for i, metric in enumerate(metrics):
+    new_col = f'{metric}_NEW'
+    old_col = f'{metric}_OLD'
+    
+    axs[i].plot(df['DATE_ROLLING'], df[new_col], label='New', color='blue', marker='o')
+    axs[i].plot(df['DATE_ROLLING'], df[old_col], label='Old', color='orange', marker='x')
+    
+    axs[i].set_title(metric.replace('_', ' ').title())
+    axs[i].set_ylabel('Value')
+    axs[i].legend()
+    axs[i].grid()
+# Set x-axis label
+axs[-1].set_xlabel('Date')
+# Adjust layout
+plt.tight_layout()
+plt.show()
