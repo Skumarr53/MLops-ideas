@@ -433,7 +433,7 @@ INSERT INTO A
 SELECT * FROM B;
 
 ------
-
+Below code is not working I think it has to do with the way pool.map is set up. Can you fix
 
 def  compute_net_sentiment_score(pos, neg, neu):
   pos, neg, neu = np.array(pos), np.array(neg), np.array(neu)
