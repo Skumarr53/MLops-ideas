@@ -410,3 +410,9 @@ WHERE VERSION_ID IN (
     FROM EDS_PROD.QUANT.YUJING_ECALL_NLI_SENTIMENT_SCORE_PY_DEV_2 
     WHERE DATE >= '2024-01-01'
 );
+
+
+- save corrected sec and spkr identier in on table load only required columns
+- load both py 2 table content and compute net sentiment score
+- the combine both net sentiment and  sec and spkr identier and write into table along with required columns
+- then merge above table with main py2 creationg new table to finish backfilling
