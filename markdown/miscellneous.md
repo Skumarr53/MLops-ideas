@@ -431,3 +431,13 @@ I have 2 tables A and B with identical columns. I want to union all B with A and
 Ans:
 INSERT INTO A
 SELECT * FROM B;
+
+------
+
+
+def  compute_net_sentiment_score(pos, neg, neu):
+  pos, neg, neu = np.array(pos), np.array(neg), np.array(neu)
+  net_sentiment_score = (pos - neg)/(pos + neg + neu)
+  return list(net_sentiment_score)
+  
+POS_SCORE_FILT_ALL, NEU_SCORE_FILT_ALL, NEG_SCORE_FILT_ALL
