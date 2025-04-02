@@ -444,3 +444,8 @@ with mp.Pool(min(mp.cpu_count(), 16)) as pool:
   main_sentiment_df['NET_SENTIMENT_SCORE'] = pool.map(compute_net_sentiment_score, main_sentiment_df['POS_SCORE_FILT_ALL'], 
                                                                                   main_sentiment_df['NEG_SCORE_FILT_ALL'], 
                                                                                   main_sentiment_df['NEU_SCORE_FILT_ALL'])
+
+
+['ENTITY_ID', 'VERSION_ID', 'SECTION_IDENTIFIER', 'SPEAKER_IDENTIFIER']
+['VERSION_ID', 'POS_SCORE_FILT_ALL', 'NEU_SCORE_FILT_ALL',
+       'NEG_SCORE_FILT_ALL', 'NET_SENTIMENT_SCORE']
