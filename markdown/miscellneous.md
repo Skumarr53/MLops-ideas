@@ -424,3 +424,10 @@ Ans:
 SELECT t1.A, t1.B, t1.C, t1.D, t1.T, t2.E, t2.F
 FROM table1 t1
 JOIN table2 t2 ON t1.A = t2.A AND t1.B = t2.B;
+
+
+I have 2 tables A and B with identical columns. I want to union all B with A and store cobined data in A. provide query for that
+
+Ans:
+INSERT INTO A
+SELECT * FROM B;
