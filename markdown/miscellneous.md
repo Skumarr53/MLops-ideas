@@ -416,3 +416,11 @@ WHERE VERSION_ID IN (
 - load both py 2 table content and compute net sentiment score
 - the combine both net sentiment and  sec and spkr identier and write into table along with required columns
 - then merge above table with main py2 creationg new table to finish backfilling
+
+
+I have table1 with cols A, B, C, D and table2 with cols A, B, C, E, F. Now I want to join both tables uysing A, B as identifer and Keep only C from tableA. Give me sql query to achieve this  
+
+Ans:
+SELECT t1.C
+FROM table1 t1
+JOIN table2 t2 ON t1.A = t2.A AND t1.B = t2.B;
