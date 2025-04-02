@@ -449,3 +449,6 @@ with mp.Pool(min(mp.cpu_count(), 16)) as pool:
 ['ENTITY_ID', 'VERSION_ID', 'SECTION_IDENTIFIER', 'SPEAKER_IDENTIFIER']
 ['VERSION_ID', 'POS_SCORE_FILT_ALL', 'NEU_SCORE_FILT_ALL',
        'NEG_SCORE_FILT_ALL', 'NET_SENTIMENT_SCORE']
+
+
+merged_df = pd.merge(df1, df2, on='VERSION_ID', how='inner')
