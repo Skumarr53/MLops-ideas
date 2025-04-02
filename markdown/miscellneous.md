@@ -435,26 +435,12 @@ SELECT * FROM B;
 ------
 
 
-import pandas as pd
-import numpy as np
-# Sample DataFrame
-data = {
-    'POS_SCORE_FILT_ALL': [10, 20, 30],
-    'NEU_SCORE_FILT_ALL': [5, 15, 25],
-    'NEG_SCORE_FILT_ALL': [2, 3, 1]
-}
-df = pd.DataFrame(data)
-# Define the function to compute net sentiment score
-def compute_net_sentiment_score(pos, neg, neu):
-    pos, neg, neu = np.array(pos), np.array(neg), np.array(neu)
-    net_sentiment_score = (pos - neg) / (pos + neg + neu)
-    return list(net_sentiment_score)
-# Apply the function to compute net sentiment score for each row
-df['NET_SENTIMENT_SCORE'] = df.apply(
-    lambda row: compute_net_sentiment_score(row['POS_SCORE_FILT_ALL'], 
-                                             row['NEG_SCORE_FILT_ALL'], 
-                                             row['NEU_SCORE_FILT_ALL']),
-    axis=1
-)
-# Display the updated DataFrame
-print(df)
+def  compute_net_sentiment_score(pos, neg, neu):
+  pos, neg, neu = np.array(pos), np.array(neg), np.array(neu)
+  net_sentiment_score = (pos - neg)/(pos + neg + neu)
+  return list(net_sentiment_score)
+
+with mp.Pool(min(mp.cpu_count(), 16)) as pool:
+  main_sentiment_df['NET_SENTIMENT_SCORE'] = pool.map(compute_net_sentiment_score, main_sentiment_df['POS_SCORE_FILT_ALL'], 
+                                                                                  main_sentiment_df['NEG_SCORE_FILT_ALL'], 
+                                                                                  main_sentiment_df['NEU_SCORE_FILT_ALL'])
