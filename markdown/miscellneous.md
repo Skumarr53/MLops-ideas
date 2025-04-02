@@ -433,7 +433,7 @@ INSERT INTO A
 SELECT * FROM B;
 
 ------
-
+Below code is not working I think it has to do with the way pool.map is set up. Can you fix
 
 def  compute_net_sentiment_score(pos, neg, neu):
   pos, neg, neu = np.array(pos), np.array(neg), np.array(neu)
@@ -444,3 +444,9 @@ with mp.Pool(min(mp.cpu_count(), 16)) as pool:
   main_sentiment_df['NET_SENTIMENT_SCORE'] = pool.map(compute_net_sentiment_score, main_sentiment_df['POS_SCORE_FILT_ALL'], 
                                                                                   main_sentiment_df['NEG_SCORE_FILT_ALL'], 
                                                                                   main_sentiment_df['NEU_SCORE_FILT_ALL'])
+
+                                                                                  with mp.Pool(min(mp.cpu_count(), 16)) as pool:
+    # Zip the columns together to create an iterable of tuples
+    input_data = zip(main_sentiment_df['POS_SCORE_FILT_ALL'], 
+                     main_sentiment_df['NEG_SCORE_FILT_ALL'], 
+                     main_sentiment_df['NEU_SCORE_FILT_ALL'])
