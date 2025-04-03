@@ -452,3 +452,16 @@ with mp.Pool(min(mp.cpu_count(), 16)) as pool:
 
 
 merged_df = pd.merge(df1, df2, on='VERSION_ID', how='inner')
+
+-------
+
+I have 3 tables A, B, and C. I want to pull version ids from VERSION_ID columns present in table A but missing in column B. then for resulting version ids I want to pull records from table C matcing these ids. Provide sql query   
+
+
+SELECT C.*
+FROM C
+WHERE C.VERSION_ID IN (
+    SELECT A.VERSION_ID
+    FROM A
+    WHERE A.VERSION_ID NOT IN (SELECT B.VERSION_ID FROM B)
+);
