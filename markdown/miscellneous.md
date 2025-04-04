@@ -465,3 +465,72 @@ WHERE C.VERSION_ID IN (
     FROM A
     WHERE A.VERSION_ID NOT IN (SELECT B.VERSION_ID FROM B)
 );
+
+
+
+
+
+dask code:
+for col in main_sentiment_df.columns:
+ main_sentiment_df[col] = main_sentiment_df[col].apply(ast.literal_eval)
+
+
+equivalent multiprocessing code:
+
+- when function takes single column input
+
+n_workers=16
+import multiprocessing as mp
+with mp.Pool(min(mp.cpu_count(), n_workers)) as pool:
+  for col in main_sentiment_df.columns:
+      main_sentiment_df[col] = pool.map(ast.literal_eval, main_sentiment_df[col])
+
+
+
+- when fuction takes multiple columns as input
+import numpy as np  
+import multiprocessing as mp
+
+
+def  compute_net_sentiment_score(data):
+  pos, neg, neu = data
+  pos, neg, neu = np.array(pos), np.array(neg), np.array(neu)
+  net_sentiment_score = (pos - neg)/(pos + neg + neu)
+  return [float(val) for val in net_sentiment_score]
+
+
+n_workers=16
+with mp.Pool(min(mp.cpu_count(), n_workers)) as pool: 
+  main_sentiment_df['NET_SENTIMENT_SCORE'] = pool.map(compute_net_sentiment_score, zip(main_sentiment_df['POS_SCORE_FILT_ALL'], 
+                                                                                       main_sentiment_df['NEG_SCORE_FILT_ALL'], 
+                                                                                       main_sentiment_df['NEU_SCORE_FILT_ALL']))
+
+
+
+---------------------------
+
+def clean_dataframe(df):
+    # Initialize lists to hold the cleaned values
+    cleaned_filt_all = []
+    cleaned_sect_identifier = []
+    cleaned_speaker_identifier = []
+    # Iterate through each row of the DataFrame
+    for _, row in tqdm(df.iterrows()):
+        # Get the current row's values
+        filt_all = row['FILT_ALL']
+        filt_all_yuj = row['FILT_ALL_YUJ']
+        sect_identifier = row['SECTION_IDENTIFIER']
+        speaker_identifier = row['SPEAKER_IDENTIFIER']
+        
+        # Create a mask for indices to keep
+        indices_to_keep = [i for i, item in enumerate(filt_all) if item in filt_all_yuj]
+        
+        # Filter the lists based on the indices to keep
+        cleaned_filt_all.append([filt_all[i] for i in indices_to_keep])
+        cleaned_sect_identifier.append([sect_identifier[i] for i in indices_to_keep])
+        cleaned_speaker_identifier.append([speaker_identifier[i] for i in indices_to_keep])
+    # Assign the cleaned lists back to the DataFrame
+    df['FILT_ALL'] = cleaned_filt_all
+    df['SECTION_IDENTIFIER'] = cleaned_sect_identifier
+    df['SPEAKER_IDENTIFIER'] = cleaned_speaker_identifier
+    return df
