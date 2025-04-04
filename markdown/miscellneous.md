@@ -534,3 +534,64 @@ def clean_dataframe(df):
     df['SECTION_IDENTIFIER'] = cleaned_sect_identifier
     df['SPEAKER_IDENTIFIER'] = cleaned_speaker_identifier
     return df
+
+
+----
+
+from tqdm import tqdm
+
+def clean_dataframe(df):
+    # Lists to hold the final cleaned values for the entire DataFrame
+    cleaned_filt_all_final = []
+    cleaned_sect_identifier_final = []
+    cleaned_speaker_identifier_final = []
+    
+    # Iterate through each row of the DataFrame with a progress bar
+    for _, row in tqdm(df.iterrows(), total=len(df)):
+        filt_all = row['FILT_ALL']
+        filt_all_yuj = row['FILT_ALL_YUJ']
+        sect_identifier = row['SECTION_IDENTIFIER']
+        speaker_identifier = row['SPEAKER_IDENTIFIER']
+        
+        # Initial filtering: keep only those sentences in filt_all that are in filt_all_yuj
+        indices_to_keep = [i for i, item in enumerate(filt_all) if item in filt_all_yuj]
+        cleaned_filt = [filt_all[i] for i in indices_to_keep]
+        cleaned_sect = [sect_identifier[i] for i in indices_to_keep]
+        cleaned_speaker = [speaker_identifier[i] for i in indices_to_keep]
+        
+        # Merge filtered data with filt_all_yuj to insert any missing sentences
+        final_filt = []
+        final_sect = []
+        final_speaker = []
+        p = 0  # pointer for cleaned_filt
+        
+        for sent in filt_all_yuj:
+            if p < len(cleaned_filt) and cleaned_filt[p] == sent:
+                # Sentence exists in filtered list; add it and its identifiers
+                final_filt.append(sent)
+                final_sect.append(cleaned_sect[p])
+                final_speaker.append(cleaned_speaker[p])
+                p += 1
+            else:
+                # Sentence is missing; insert it with identifiers from the previous element
+                final_filt.append(sent)
+                if final_sect:
+                    final_sect.append(final_sect[-1])
+                    final_speaker.append(final_speaker[-1])
+                else:
+                    # Fallback for the first element if missing
+                    default_sect = cleaned_sect[0] if cleaned_sect else ""
+                    default_speaker = cleaned_speaker[0] if cleaned_speaker else ""
+                    final_sect.append(default_sect)
+                    final_speaker.append(default_speaker)
+        
+        # Append the final merged lists for this row
+        cleaned_filt_all_final.append(final_filt)
+        cleaned_sect_identifier_final.append(final_sect)
+        cleaned_speaker_identifier_final.append(final_speaker)
+    
+    # Update DataFrame with the final cleaned columns
+    df['FILT_ALL'] = cleaned_filt_all_final
+    df['SECTION_IDENTIFIER'] = cleaned_sect_identifier_final
+    df['SPEAKER_IDENTIFIER'] = cleaned_speaker_identifier_final
+    return df
