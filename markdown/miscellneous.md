@@ -667,3 +667,80 @@ def create_text_pairs(transcripts, labels, inference_template):
             text2.append(f"{inference_template} 
 {l}.") 
     return list(zip(text1, text2))
+---
+
+from typing import Iterator, List, Tuple, Dict, Any
+from pyspark.sql.functions import pandas_udf, PandasUDFType
+import pandas as pd
+from itertools import product
+from loguru import logger
+from pdb import set_trace
+
+
+def inference_run(
+    iterator: Iterator[List[str]],
+    nli_pipeline,
+    labels: List[str],
+    max_length: int = 512,
+    batch_size: int = 32,
+) -> Iterator[pd.Series]:
+    split_results = []
+    for batch_num, batch in enumerate(iterator, start=1):
+        logger.info(f"Processing inference batch {batch_num} with {len(batch)} rows.")
+        try:
+            pairs = batch.tolist()
+            flat_text_pairs = [
+                                    {'text': t, 'text_pair': f"{l}."} 
+                                    for t, l in product(pairs, labels)
+                                ]
+            
+            logger.debug(f"Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
+            if flat_text_pairs:
+                # Perform inference in batch
+                results = nli_pipeline(
+                    flat_text_pairs,
+                    padding=True,
+                    top_k=None,
+                    batch_size=batch_size,
+                    truncation=True,
+                    max_length=max_length
+                )
+                logger.debug(f"Batch {batch_num}: Inference completed with {len(results)} results.")
+                
+                # Append results for the current row
+            else:
+                results = []
+                logger.warning(f"Batch {batch_num}: No text pairs to infer for current row.")
+            set_trace()
+            yield pd.Series(results)
+        
+        except Exception as e:
+            logger.error(f"Error in inference batch {batch_num}: {e}")
+            raise Exception(f"Error in inference batch {batch_num}: {e}")
+
+# Define the schema for the inference results
+dict_schema = StructType([
+    StructField("label", StringType(), False),
+    StructField("score", FloatType(), False)
+])
+
+
+
+
+# Define the schema for the output of the UDF
+inference_schema = ArrayType(ArrayType(dict_schema))
+
+## Define the UDF
+inference_udf_init = partial(inference_run, nli_pipeline = nli_pipeline, max_length=512, batch_size=64, labels = LABELS) 
+
+
+res = list(inference_udf_init(pd_df['FILT_MD'].head(1).to_list()))
+
+# infernece_udf_func = pd_udf_wrapper(inference_udf_init, inference_schema, udf_type=PandasUDFType.SCALAR_ITER)
+
+# currdf_spark = sparkdf_apply_transformations(
+#     currdf_spark,
+#     [
+#         ("MD_RESULT", "FILT_MD", infernece_udf_func),
+#         ("QA_RESULT", "FILT_QA", infernece_udf_func)
+#     ])
