@@ -744,3 +744,13 @@ res = list(inference_udf_init(pd_df['FILT_MD'].head(1).to_list()))
 #         ("MD_RESULT", "FILT_MD", infernece_udf_func),
 #         ("QA_RESULT", "FILT_QA", infernece_udf_func)
 #     ])
+
+
+-------
+
+from itertools import chain
+n_repeat = 4
+original_list = [1, 2, 3, 4]
+# Using itertools.chain to repeat each element
+repeated_list = list(chain.from_iterable([[x] * n_repeat for x in original_list]))
+print(repeated_list)
