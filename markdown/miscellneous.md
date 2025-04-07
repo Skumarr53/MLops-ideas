@@ -625,3 +625,60 @@ def inference_run(
 
 
 'pyspark.errors.exceptions.base.PySparkRuntimeError: [RESULT_LENGTH_MISMATCH_FOR_SCALAR_ITER_PANDAS_UDF] The length of output in Scalar iterator pandas UDF should be the same with the input's; however, the length of output was 1 and the length of input was 2.'. Full traceback below:
+
+
+
+Ans:
+
+# Define the schema to return JSON strings
+inference_schema = ArrayType(StringType())
+
+@pandas_udf(inference_schema, PandasUDFType.SCALAR)
+def inference_run(
+    iterator: Iterator[pd.Series],
+    nli_pipeline,
+    labels: List[str],
+    max_length: int = 512,
+    batch_size: int = 32,
+    threshold: float = 0.8
+) -> Iterator[pd.Series]:
+    for batch in iterator:
+        # 'batch' is a Pandas Series where each element corresponds to a row
+        out_results = []
+        for row in batch:
+            # Initialize dictionaries per row
+            score_dict = {label: [] for label in labels}
+            total_dict = {label: [] for label in labels}
+            
+            # Each 'row' is expected to be a list (e.g., list of text pairs)
+            # If the row is empty or None, simply append an empty JSON object
+            if row:
+                # Prepare pairs for the current row
+                # 'row' is assumed to be a list, so no need to flatten further unless nested.
+                pairs = row if isinstance(row, list) else []
+                # Replicate each pair for each label
+                pair_list = list(chain.from_iterable([[x] * len(labels) for x in pairs]))
+                labels_list = labels * len(pairs)
+                flat_text_pairs = [{'text': t, 'text_pair': f"{l}."} for t, l in zip(pair_list, labels_list)]
+                
+                if flat_text_pairs:
+                    results = nli_pipeline(
+                        flat_text_pairs,
+                        padding=True,
+                        top_k=None,
+                        batch_size=batch_size,
+                        truncation=True,
+                        max_length=max_length
+                    )
+                    # Collect inference results
+                    for lab, result in zip(labels_list, results):
+                        for res in result:
+                            if res['label'] == 'entailment':
+                                score = res['score']
+                                total_dict[lab].append(int(score > threshold))
+                                score_dict[lab].append(score)
+            
+            out_dict = {'total_dict': total_dict, 'score_dict': score_dict}
+            out_results.append(json.dumps(out_dict))
+        # Ensure output series length matches input series length
+        yield pd.Series(out_results)
