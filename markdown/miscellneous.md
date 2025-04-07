@@ -599,152 +599,61 @@ def clean_dataframe(df):
 
 --------------------------------
 
-improved inference
-
-from itertools import product
-
-
-
 def inference_run(
     iterator: Iterator[List[str]],
     nli_pipeline,
     labels: List[str],
     max_length: int = 512,
     batch_size: int = 32,
+    threshold: float = 0.8
 ) -> Iterator[pd.Series]:
     for batch_num, batch in enumerate(iterator, start=1):
-        logger.info(Processing inference batch {batch_num} with {len(batch)} rows.")
-        try:
-            # Process each row in the batch
-            split_results = []
-            for pairs in batch:
-                # Create flat text pairs for the current row
+        # logger.info(f"Processing inference batch {batch_num} with {len(batch)} rows.")
+        # try:
+        score_dict: Dict[str, List[float]] = {label: [] for label in labels}
+        total_dict: Dict[str, List[int]] = {label: [] for label in labels}
 
-                labels = ['A', 'B', 'C']
-                pairs = ['sentences 1', 'sentences 1']
-                flat_text_pairs = [
-                                        {'text': t, 'text_pair': {l}."} 
-                                        for t, l in product(pairs, labels)
-                                    ]
-                
-                logger.debug(Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
-                
-                if flat_text_pairs:
-                    # Perform inference in batch
-                    results = nli_pipeline(
-                        flat_text_pairs,
-                        padding=True,
-                        top_k=None,
-                        batch_size=batch_size,
-                        truncation=True,
-                        max_length=max_length
-                    )
-                    logger.debug(Batch {batch_num}: Inference completed with {len(results)} results.")
-                    
-                    # Append results for the current row
-                    split_results.append(results)
-                else:
-                    split_results.append([])
-                    logger.warning(Batch {batch_num}: No text pairs to infer for current row.")
+        pairs = batch.tolist()
+        # pairs = [pair for sublist in batch for pair in sublist]
+        pair_list = list(chain.from_iterable([[x] * len(labels) for x in pairs]))
+        labels_list = labels * len(pairs)
+        flat_text_pairs = [
+                                {'text': t, 'text_pair': f"{l}."} 
+                                for t, l in zip(pair_list, labels_list)
+                            ]
+        
+        # logger.debug(f"Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
+        split_results = []
+        if flat_text_pairs:
+            # Perform inference in batch
+
+            results = nli_pipeline(
+                flat_text_pairs,
+                padding=True,
+                top_k=None,
+                batch_size=batch_size,
+                truncation=True,
+                max_length=max_length
+            )
+            # logger.debug(f"Batch {batch_num}: Inference completed with {len(results)} results.")
             
-            yield pd.Series(split_results)
+            # get scores and labels
+            for lab, result in zip(labels_list, results):
+                for res in result:
+                    if res['label'] == 'entailment':
+                        score = res['score']
+                        total_dict[lab].append(int(score > threshold))
+                        score_dict[lab].append(score)                
+            # Append results for the current row
+            split_results.append([total_dict, score_dict])
+        # else:
+        #     split_results.append([])
+        #     # logger.warning(f"Batch {batch_num}: No text pairs to infer for current row.")
+        yield pd.Series(split_results)
         
-        except Exception as e:
-            logger.error(Error in inference batch {batch_num}: {e}")
-            raise Exception(Error in inference batch {batch_num}: {e}")
-        
-
-[(i,j) for i,j in product([1,2], [1])]
-
-
-
-def create_text_pairs(transcripts, labels, inference_template): 
-    text1 = [] 
-    text2 = [] 
-    for t in transcripts: 
-        for l in labels: 
-            text1.append(t) 
-            text2.append({inference_template} 
-{l}.") 
-    return list(zip(text1, text2))
----
-
-from typing import Iterator, List, Tuple, Dict, Any
-from pyspark.sql.functions import pandas_udf, PandasUDFType
-import pandas as pd
-from itertools import product
-from loguru import logger
-from pdb import set_trace
-
-
-def inference_run(
-    iterator: Iterator[List[str]],
-    nli_pipeline,
-    labels: List[str],
-    max_length: int = 512,
-    batch_size: int = 32,
-) -> Iterator[pd.Series]:
-    split_results = []
-    for batch_num, batch in enumerate(iterator, start=1):
-        logger.info(Processing inference batch {batch_num} with {len(batch)} rows.")
-        try:
-            pairs = batch.tolist()
-            flat_text_pairs = [
-                                    {'text': t, 'text_pair': {l}."} 
-                                    for t, l in product(pairs, labels)
-                                ]
-            
-            logger.debug(Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
-            if flat_text_pairs:
-                # Perform inference in batch
-                results = nli_pipeline(
-                    flat_text_pairs,
-                    padding=True,
-                    top_k=None,
-                    batch_size=batch_size,
-                    truncation=True,
-                    max_length=max_length
-                )
-                logger.debug(Batch {batch_num}: Inference completed with {len(results)} results.")
-                
-                # Append results for the current row
-            else:
-                results = []
-                logger.warning(Batch {batch_num}: No text pairs to infer for current row.")
-            set_trace()
-            yield pd.Series(results)
-        
-        except Exception as e:
-            logger.error(Error in inference batch {batch_num}: {e}")
-            raise Exception(Error in inference batch {batch_num}: {e}")
-
-# Define the schema for the inference results
-dict_schema = StructType([
-    StructField("label", StringType(), False),
-    StructField("score", FloatType(), False)
-])
-
-
-
-
-# Define the schema for the output of the UDF
-inference_schema = ArrayType(ArrayType(dict_schema))
-
-## Define the UDF
-inference_udf_init = partial(inference_run, nli_pipeline = nli_pipeline, max_length=512, batch_size=64, labels = LABELS) 
-
-
-res = list(inference_udf_init(pd_df['FILT_MD'].head(1).to_list()))
-
-# infernece_udf_func = pd_udf_wrapper(inference_udf_init, inference_schema, udf_type=PandasUDFType.SCALAR_ITER)
-
-# currdf_spark = sparkdf_apply_transformations(
-#     currdf_spark,
-#     [
-#         ("MD_RESULT",FILT_MD", infernece_udf_func),
-#         ("QA_RESULT",FILT_QA", infernece_udf_func)
-#     ])
-
+        # except Exception as e:
+        #     # logger.error(f"Error in inference batch {batch_num}: {e}")
+        #     raise Exception(f"Error in inference batch {batch_num}: {e}")
 
 -------
 
@@ -779,3 +688,6 @@ SENT_LABELS_FILT_QA
               UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
                FROM EDS_PROD.QUANT_LIVE.CTS_FUND_COMBINED_SCORES_H)
               WHERE VERSION_ID NOT IN (SELECT VERSION_ID FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL);
+
+
+
