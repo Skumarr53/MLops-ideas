@@ -556,3 +556,52 @@ Traceback (most recent call last):
   File "/databricks/spark/python/pyspark/sql/pandas/types.py", line 816, in convert_struct
     assert isinstance(value, tuple)
 AssertionError
+
+Ans:
+inference_schema = ArrayType(StringType())
+
+
+import json
+
+@pandas_udf(inference_schema, PandasUDFType.SCALAR)
+def inference_run(
+    iterator: Iterator[List[str]],
+    nli_pipeline,
+    labels: List[str],
+    max_length: int = 512,
+    batch_size: int = 32,
+    threshold: float = 0.8
+) -> Iterator[pd.Series]:
+    for batch_num, batch in enumerate(iterator, start=1):
+        score_dict = {label: [] for label in labels}
+        total_dict = {label: [] for label in labels}
+
+        # Flatten the nested list if necessary
+        pairs = [pair for sublist in batch for pair in sublist]
+        pair_list = list(chain.from_iterable([[x] * len(labels) for x in pairs]))
+        labels_list = labels * len(pairs)
+        flat_text_pairs = [
+            {'text': t, 'text_pair': f"{l}."} 
+            for t, l in zip(pair_list, labels_list)
+        ]
+
+        if flat_text_pairs:
+            results = nli_pipeline(
+                flat_text_pairs,
+                padding=True,
+                top_k=None,
+                batch_size=batch_size,
+                truncation=True,
+                max_length=max_length
+            )
+
+            for lab, result in zip(labels_list, results):
+                for res in result:
+                    if res['label'] == 'entailment':
+                        score = res['score']
+                        total_dict[lab].append(int(score > threshold))
+                        score_dict[lab].append(score)
+
+        # Convert the final dictionary to a JSON string
+        output_dict = {"total_dict": total_dict, "score_dict": score_dict}
+        yield pd.Series([json.dumps(output_dict)])
