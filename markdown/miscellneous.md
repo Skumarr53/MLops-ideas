@@ -558,6 +558,8 @@ Traceback (most recent call last):
 AssertionError
 
 Ans:
+---------------------
+
 inference_schema = ArrayType(StringType())
 
 
@@ -573,19 +575,25 @@ def inference_run(
     threshold: float = 0.8
 ) -> Iterator[pd.Series]:
     for batch_num, batch in enumerate(iterator, start=1):
-        score_dict = {label: [] for label in labels}
-        total_dict = {label: [] for label in labels}
+        # logger.info(f"Processing inference batch {batch_num} with {len(batch)} rows.")
+        # try:
+        score_dict: Dict[str, List[float]] = {label: [] for label in labels}
+        total_dict: Dict[str, List[int]] = {label: [] for label in labels}
 
-        # Flatten the nested list if necessary
+        pairs = batch.tolist()
         pairs = [pair for sublist in batch for pair in sublist]
         pair_list = list(chain.from_iterable([[x] * len(labels) for x in pairs]))
         labels_list = labels * len(pairs)
         flat_text_pairs = [
-            {'text': t, 'text_pair': f"{l}."} 
-            for t, l in zip(pair_list, labels_list)
-        ]
-
+                                {'text': t, 'text_pair': f"{l}."} 
+                                for t, l in zip(pair_list, labels_list)
+                            ]
+        
+        # logger.debug(f"Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
+        split_results = []
         if flat_text_pairs:
+            # Perform inference in batch
+
             results = nli_pipeline(
                 flat_text_pairs,
                 padding=True,
@@ -594,14 +602,26 @@ def inference_run(
                 truncation=True,
                 max_length=max_length
             )
-
+            # logger.debug(f"Batch {batch_num}: Inference completed with {len(results)} results.")
+            
+            # get scores and labels
             for lab, result in zip(labels_list, results):
                 for res in result:
                     if res['label'] == 'entailment':
                         score = res['score']
                         total_dict[lab].append(int(score > threshold))
-                        score_dict[lab].append(score)
+                        score_dict[lab].append(score)                
+            # Append results for the current row
+            out_dict = {'total_dict':total_dict, 
+                              'score_dict':score_dict}
+            split_results.append(json.dumps(out_dict))
+        # else:
+        #     split_results.append([])
+        #     # logger.warning(f"Batch {batch_num}: No text pairs to infer for current row.")
+        yield pd.Series(split_results)
 
-        # Convert the final dictionary to a JSON string
-        output_dict = {"total_dict": total_dict, "score_dict": score_dict}
-        yield pd.Series([json.dumps(output_dict)])
+
+
+
+
+'pyspark.errors.exceptions.base.PySparkRuntimeError: [RESULT_LENGTH_MISMATCH_FOR_SCALAR_ITER_PANDAS_UDF] The length of output in Scalar iterator pandas UDF should be the same with the input's; however, the length of output was 1 and the length of input was 2.'. Full traceback below:
