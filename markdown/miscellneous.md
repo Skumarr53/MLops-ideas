@@ -754,3 +754,12 @@ original_list = [1, 2, 3, 4]
 # Using itertools.chain to repeat each element
 repeated_list = list(chain.from_iterable([[x] * n_repeat for x in original_list]))
 print(repeated_list)
+
+
+----------------
+
+SELECT * FROM A
+WHERE VERSION_ID NOT IN (SELECT VERSION_ID FROM C)
+UNION ALL
+SELECT * FROM B
+WHERE VERSION_ID NOT IN (SELECT VERSION_ID FROM C);
