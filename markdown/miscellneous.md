@@ -1,6 +1,6 @@
 
 def create_speaker_identifier_with_fuzzy(row, threshold=80):
-    """
+   ""
     Create speaker identifiers with fuzzy matching for unmatched cases
     Parameters:
     -----------
@@ -13,7 +13,7 @@ def create_speaker_identifier_with_fuzzy(row, threshold=80):
     tuple : (speaker_identifiers, na_indices)
         speaker_identifiers : list of identified speakers
         na_indices : list of indices where original matching failed
-    """
+   ""
     speaker_identifier = []
     na_indices = []
     filt_all_cleaned = [clean_text(sentence) for sentence in row['FILT_ALL']]
@@ -228,14 +228,14 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 # Set the MLflow tracking URI if needed
 # mlflow.set_tracking_uri("http://your_mlflow_server:5000")
 # Specify the experiment ID or run ID from which you want to load the model
-experiment_id = "your_experiment_id"
-run_id = "your_run_id"
+experiment_id =your_experiment_id"
+run_id =your_run_id"
 # Load the model as a PyFunc model
-model_uri = f"runs:/{run_id}/model"  # Adjust the path if your model is saved under a different name
+model_uri = runs:/{run_id}/model"  # Adjust the path if your model is saved under a different name
 loaded_model = mlflow.pyfunc.load_model(model_uri)
 # If your model is a transformer model, you might need to load the tokenizer and model separately
 # Assuming the model is saved as a Hugging Face transformer model
-model_name = "your_model_name"  # Replace with the actual model name or path
+model_name =your_model_name"  # Replace with the actual model name or path
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 transformer_model = AutoModelForSequenceClassification.from_pretrained(model_name)
 # Example usage of the loaded model for inference
@@ -244,7 +244,7 @@ def predict(input_text):
     outputs = transformer_model(**inputs)
     return outputs
 # Example prediction
-input_text = "This is a test input."
+input_text =This is a test input."
 prediction = predict(input_text)
 print(prediction)
 
@@ -261,22 +261,22 @@ spark = SparkSession.builder \
 # old_results = spark.read.format("your_format").load("path_to_old_results")
 # new_results = spark.read.format("your_format").load("path_to_new_results")
 # Example DataFrames for demonstration
-old_data = [(1, "A", 100), (2, "B", 200)]
-new_data = [(1, "A", 150), (2, "B", 250), (3, "C", 300)]
+old_data = [(1,A", 100), (2,B", 200)]
+new_data = [(1,A", 150), (2,B", 250), (3,C", 300)]
 # Assuming primary keys are (primary_key1, primary_key2)
-old_results = spark.createDataFrame(old_data, ["primary_key1", "primary_key2", "result"])
-new_results = spark.createDataFrame(new_data, ["primary_key1", "primary_key2", "result"])
+old_results = spark.createDataFrame(old_data, ["primary_key1",primary_key2",result"])
+new_results = spark.createDataFrame(new_data, ["primary_key1",primary_key2",result"])
 # Define primary key columns
-primary_keys = ["primary_key1", "primary_key2"]
+primary_keys = ["primary_key1",primary_key2"]
 # Merge DataFrames on primary keys
 merged_df = old_results.join(new_results, on=primary_keys, how="outer")
 # Rename result columns
 for column in old_results.columns:
     if column not in primary_keys:
-        merged_df = merged_df.withColumnRenamed(column, f"{column}_old")
+        merged_df = merged_df.withColumnRenamed(column, {column}_old")
 for column in new_results.columns:
     if column not in primary_keys:
-        merged_df = merged_df.withColumnRenamed(column, f"{column}_new")
+        merged_df = merged_df.withColumnRenamed(column, {column}_new")
 # Show the result
 merged_df.show()
 # Stop Spark session
@@ -302,9 +302,9 @@ spark.stop()
 
 I hope this message finds you well.
 
-I wanted to take a moment to explain the format we are using for merging the old and new results data. The merge process involves combining two datasets based on multiple primary key columns. Each dataset retains its original structure, and the result columns from the old dataset are suffixed with "_old," while those from the new dataset are suffixed with "_new." This approach allows us to clearly distinguish between the old and new results while maintaining the integrity of the primary keys.
+I wanted to take a moment to explain the format we are using for merging the old and new results data. The merge process involves combining two datasets based on multiple primary key columns. Each dataset retains its original structure, and the result columns from the old dataset are suffixed with_old," while those from the new dataset are suffixed with_new." This approach allows us to clearly distinguish between the old and new results while maintaining the integrity of the primary keys.
 
-For example, if we have primary keys such as "primary_key1" and "primary_key2," the merged dataset will include these keys along with the results from both datasets, clearly labeled to avoid confusion.
+For example, if we have primary keys such asprimary_key1" andprimary_key2," the merged dataset will include these keys along with the results from both datasets, clearly labeled to avoid confusion.
 
 If you have any questions or need further clarification, please feel free to reach out.
 
@@ -392,16 +392,16 @@ Obersertion:
 
 
 
-create TABLE "EDS_PROD"."QUANT"."YUJING_ECALL_NLI_SENTIMENT_SCORE_PY_DEV_2" AS
+create TABLEEDS_PROD"."QUANT"."YUJING_ECALL_NLI_SENTIMENT_SCORE_PY_DEV_2" AS
 select ENTITY_ID, CALL_ID, VERSION_ID, DATE, CALL_NAME, COMPANY_NAME, 
         FILT_ALL, FIN_SENT_LABELS_FILT_ALL, NLI_SENT_LABELS_FILT_ALL, 
         POS_SCORE_FILT_ALL, NEU_SCORE_FILT_ALL, NEG_SCORE_FILT_ALL 
-        from "EDS_PROD"."QUANT"."YUJING_ECALL_NLI_SENTIMENT_SCORE_PY_DEV_1"
+        fromEDS_PROD"."QUANT"."YUJING_ECALL_NLI_SENTIMENT_SCORE_PY_DEV_1"
 union all
 select ENTITY_ID, CALL_ID, VERSION_ID, DATE, CALL_NAME, COMPANY_NAME, 
         FILT_ALL, FIN_SENT_LABELS_FILT_ALL, NLI_SENT_LABELS_FILT_ALL, 
         POS_SCORE_FILT_ALL, NEU_SCORE_FILT_ALL, NEG_SCORE_FILT_ALL 
-        from "EDS_PROD"."QUANT"."YUJING_ECALL_NLI_SENTIMENT_SCORE_DEV_1"where DATE >= '2023-01-01';
+        fromEDS_PROD"."QUANT"."YUJING_ECALL_NLI_SENTIMENT_SCORE_DEV_1"where DATE >= '2023-01-01';
 
 
 DELETE FROM EDS_PROD.QUANT.SANTHOSH_SENTIMENT_CORE_TABLE
@@ -580,8 +580,8 @@ def clean_dataframe(df):
                     final_speaker.append(final_speaker[-1])
                 else:
                     # Fallback for the first element if missing
-                    default_sect = cleaned_sect[0] if cleaned_sect else ""
-                    default_speaker = cleaned_speaker[0] if cleaned_speaker else ""
+                    default_sect = cleaned_sect[0] if cleaned_sect else"
+                    default_speaker = cleaned_speaker[0] if cleaned_speaker else"
                     final_sect.append(default_sect)
                     final_speaker.append(default_speaker)
         
@@ -613,7 +613,7 @@ def inference_run(
     batch_size: int = 32,
 ) -> Iterator[pd.Series]:
     for batch_num, batch in enumerate(iterator, start=1):
-        logger.info(f"Processing inference batch {batch_num} with {len(batch)} rows.")
+        logger.info(Processing inference batch {batch_num} with {len(batch)} rows.")
         try:
             # Process each row in the batch
             split_results = []
@@ -623,11 +623,11 @@ def inference_run(
                 labels = ['A', 'B', 'C']
                 pairs = ['sentences 1', 'sentences 1']
                 flat_text_pairs = [
-                                        {'text': t, 'text_pair': f"{l}."} 
+                                        {'text': t, 'text_pair': {l}."} 
                                         for t, l in product(pairs, labels)
                                     ]
                 
-                logger.debug(f"Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
+                logger.debug(Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
                 
                 if flat_text_pairs:
                     # Perform inference in batch
@@ -639,19 +639,19 @@ def inference_run(
                         truncation=True,
                         max_length=max_length
                     )
-                    logger.debug(f"Batch {batch_num}: Inference completed with {len(results)} results.")
+                    logger.debug(Batch {batch_num}: Inference completed with {len(results)} results.")
                     
                     # Append results for the current row
                     split_results.append(results)
                 else:
                     split_results.append([])
-                    logger.warning(f"Batch {batch_num}: No text pairs to infer for current row.")
+                    logger.warning(Batch {batch_num}: No text pairs to infer for current row.")
             
             yield pd.Series(split_results)
         
         except Exception as e:
-            logger.error(f"Error in inference batch {batch_num}: {e}")
-            raise Exception(f"Error in inference batch {batch_num}: {e}")
+            logger.error(Error in inference batch {batch_num}: {e}")
+            raise Exception(Error in inference batch {batch_num}: {e}")
         
 
 [(i,j) for i,j in product([1,2], [1])]
@@ -664,7 +664,7 @@ def create_text_pairs(transcripts, labels, inference_template):
     for t in transcripts: 
         for l in labels: 
             text1.append(t) 
-            text2.append(f"{inference_template} 
+            text2.append({inference_template} 
 {l}.") 
     return list(zip(text1, text2))
 ---
@@ -686,15 +686,15 @@ def inference_run(
 ) -> Iterator[pd.Series]:
     split_results = []
     for batch_num, batch in enumerate(iterator, start=1):
-        logger.info(f"Processing inference batch {batch_num} with {len(batch)} rows.")
+        logger.info(Processing inference batch {batch_num} with {len(batch)} rows.")
         try:
             pairs = batch.tolist()
             flat_text_pairs = [
-                                    {'text': t, 'text_pair': f"{l}."} 
+                                    {'text': t, 'text_pair': {l}."} 
                                     for t, l in product(pairs, labels)
                                 ]
             
-            logger.debug(f"Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
+            logger.debug(Batch {batch_num}: Total text pairs to infer: {len(flat_text_pairs)}")
             if flat_text_pairs:
                 # Perform inference in batch
                 results = nli_pipeline(
@@ -705,18 +705,18 @@ def inference_run(
                     truncation=True,
                     max_length=max_length
                 )
-                logger.debug(f"Batch {batch_num}: Inference completed with {len(results)} results.")
+                logger.debug(Batch {batch_num}: Inference completed with {len(results)} results.")
                 
                 # Append results for the current row
             else:
                 results = []
-                logger.warning(f"Batch {batch_num}: No text pairs to infer for current row.")
+                logger.warning(Batch {batch_num}: No text pairs to infer for current row.")
             set_trace()
             yield pd.Series(results)
         
         except Exception as e:
-            logger.error(f"Error in inference batch {batch_num}: {e}")
-            raise Exception(f"Error in inference batch {batch_num}: {e}")
+            logger.error(Error in inference batch {batch_num}: {e}")
+            raise Exception(Error in inference batch {batch_num}: {e}")
 
 # Define the schema for the inference results
 dict_schema = StructType([
@@ -741,8 +741,8 @@ res = list(inference_udf_init(pd_df['FILT_MD'].head(1).to_list()))
 # currdf_spark = sparkdf_apply_transformations(
 #     currdf_spark,
 #     [
-#         ("MD_RESULT", "FILT_MD", infernece_udf_func),
-#         ("QA_RESULT", "FILT_QA", infernece_udf_func)
+#         ("MD_RESULT",FILT_MD", infernece_udf_func),
+#         ("QA_RESULT",FILT_QA", infernece_udf_func)
 #     ])
 
 
@@ -763,3 +763,19 @@ WHERE VERSION_ID NOT IN (SELECT VERSION_ID FROM C)
 UNION ALL
 SELECT * FROM B
 WHERE VERSION_ID NOT IN (SELECT VERSION_ID FROM C);
+
+SELECT CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME,
+EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, UPLOAD_DT_UTC, VERSION_ID,
+EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD,
+SENT_LABELS_FILT_QA
+
+
+
+              (SELECT CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+              UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+              FROM EDS_PROD.QUANT.PARTHA_FUND_CTS_STG_1_VIEW
+              UNION ALL
+              SELECT  CAST(CALL_ID AS STRING) AS CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+              UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+               FROM EDS_PROD.QUANT_LIVE.CTS_FUND_COMBINED_SCORES_H)
+              WHERE VERSION_ID NOT IN (SELECT VERSION_ID FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL);
