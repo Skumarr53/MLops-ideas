@@ -531,3 +531,6 @@ inference_udf_init = partial(inference_run ,nli_pipeline = nli_pipeline, max_len
 currdf_spark = currdf_spark \
     .withColumn("MD_SUMMARY", inference_udf_init(col("FILT_MD"))) \
     .withColumn("QA_SUMMARY", inference_udf_init(col("FILT_QA")))
+
+
+I get asserting error when I toPandas post running above code please diagnoise the issue
