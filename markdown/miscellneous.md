@@ -479,7 +479,7 @@ def inference_run(
         total_dict: Dict[str, List[int]] = {label: [] for label in labels}
 
         pairs = batch.tolist()
-        # pairs = [pair for sublist in batch for pair in sublist]
+        pairs = [pair for sublist in batch for pair in sublist]
         pair_list = list(chain.from_iterable([[x] * len(labels) for x in pairs]))
         labels_list = labels * len(pairs)
         flat_text_pairs = [
@@ -510,7 +510,8 @@ def inference_run(
                         total_dict[lab].append(int(score > threshold))
                         score_dict[lab].append(score)                
             # Append results for the current row
-            split_results.append([total_dict, score_dict])
+        split_results.append({'total_dict':total_dict, 
+                              'score_dict':score_dict})
         # else:
         #     split_results.append([])
         #     # logger.warning(f"Batch {batch_num}: No text pairs to infer for current row.")
@@ -519,10 +520,6 @@ def inference_run(
         # except Exception as e:
         #     # logger.error(f"Error in inference batch {batch_num}: {e}")
         #     raise Exception(f"Error in inference batch {batch_num}: {e}")
-
-
-
-
 
 inference_udf_init = partial(inference_run ,nli_pipeline = nli_pipeline, max_length=512, batch_size=64, labels = LABELS) 
 
@@ -534,3 +531,28 @@ currdf_spark = currdf_spark \
 
 
 I get asserting error when I toPandas post running above code please diagnoise the issue
+
+'AssertionError'. Full traceback below:
+Traceback (most recent call last):
+  File "/local_disk0/.ephemeral_nfs/envs/pythonEnv-7a81bb94-ab7f-4859-955f-4744f1282d4c/lib/python3.10/site-packages/pandas/core/series.py", line 4760, in apply
+    ).apply()
+  File "/local_disk0/.ephemeral_nfs/envs/pythonEnv-7a81bb94-ab7f-4859-955f-4744f1282d4c/lib/python3.10/site-packages/pandas/core/apply.py", line 1207, in apply
+    return self.apply_standard()
+  File "/local_disk0/.ephemeral_nfs/envs/pythonEnv-7a81bb94-ab7f-4859-955f-4744f1282d4c/lib/python3.10/site-packages/pandas/core/apply.py", line 1287, in apply_standard
+    mapped = obj._map_values(
+  File "/local_disk0/.ephemeral_nfs/envs/pythonEnv-7a81bb94-ab7f-4859-955f-4744f1282d4c/lib/python3.10/site-packages/pandas/core/base.py", line 921, in _map_values
+    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)
+  File "/local_disk0/.ephemeral_nfs/envs/pythonEnv-7a81bb94-ab7f-4859-955f-4744f1282d4c/lib/python3.10/site-packages/pandas/core/algorithms.py", line 1814, in map_array
+    return lib.map_infer(values, mapper, convert=convert)
+  File "lib.pyx", line 2917, in pandas._libs.lib.map_infer
+  File "/databricks/spark/python/pyspark/sql/pandas/types.py", line 776, in convert_array
+    return [_element_conv(v) for v in value]  # type: ignore[misc]
+  File "/databricks/spark/python/pyspark/sql/pandas/types.py", line 776, in <listcomp>
+    return [_element_conv(v) for v in value]  # type: ignore[misc]
+  File "/databricks/spark/python/pyspark/sql/pandas/types.py", line 776, in convert_array
+    return [_element_conv(v) for v in value]  # type: ignore[misc]
+  File "/databricks/spark/python/pyspark/sql/pandas/types.py", line 776, in <listcomp>
+    return [_element_conv(v) for v in value]  # type: ignore[misc]
+  File "/databricks/spark/python/pyspark/sql/pandas/types.py", line 816, in convert_struct
+    assert isinstance(value, tuple)
+AssertionError
