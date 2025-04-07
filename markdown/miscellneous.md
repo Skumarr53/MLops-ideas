@@ -680,14 +680,98 @@ SENT_LABELS_FILT_QA
 
 
 
-              (SELECT CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
-              UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
-              FROM EDS_PROD.QUANT.PARTHA_FUND_CTS_STG_1_VIEW
-              UNION ALL
-              SELECT  CAST(CALL_ID AS STRING) AS CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
-              UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
-               FROM EDS_PROD.QUANT_LIVE.CTS_FUND_COMBINED_SCORES_H)
-              WHERE VERSION_ID NOT IN (SELECT VERSION_ID FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL);
+SELECT *
+FROM (
+    SELECT CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+           UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+    FROM EDS_PROD.QUANT.PARTHA_FUND_CTS_STG_1_VIEW
+    UNION ALL
+    SELECT CAST(CALL_ID AS STRING) AS CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+           UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+    FROM EDS_PROD.QUANT_LIVE.CTS_FUND_COMBINED_SCORES_H
+) AS CombinedRecords
+WHERE VERSION_ID NOT IN (
+    SELECT VERSION_ID 
+    FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL
+);
 
+
+
+------------
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import pandas_udf
+from pyspark.sql.types import StructType, StructField, MapType, ArrayType, FloatType, StringType
+import pandas as pd
+from typing import List, Dict
+from itertools import chain
+# Define the schema for the output
+output_schema = StructType([
+    StructField("total_dict", MapType(StringType(), ArrayType(FloatType())), True),
+    StructField("score_dict", MapType(StringType(), ArrayType(FloatType())), True)
+])
+@pandas_udf(output_schema)
+def inference_run(
+    pdf: pd.DataFrame,
+    nli_pipeline,
+    labels: List[str],
+    max_length: int = 512,
+    batch_size: int = 32,
+    threshold: float = 0.8
+) -> pd.DataFrame:
+    # Prepare output dictionaries
+    score_dict: Dict[str, List[float]] = {label: [] for label in labels}
+    total_dict: Dict[str, List[int]] = {label: [] for label in labels}
+    
+    # Extract pairs from the DataFrame
+    pairs = pdf['text_column'].tolist()  # Replace 'text_column' with the actual column name containing text
+    pair_list = list(chain.from_iterable([[x] * len(labels) for x in pairs]))
+    labels_list = labels * len(pairs)
+    
+    # Prepare flat text pairs
+    flat_text_pairs = [{'text': t, 'text_pair': f"{l}."} for t, l in zip(pair_list, labels_list)]
+    
+    if flat_text_pairs:
+        # Perform inference in batch
+        results = nli_pipeline(
+            flat_text_pairs,
+            padding=True,
+            top_k=None,
+            batch_size=batch_size,
+            truncation=True,
+            max_length=max_length
+        )
+        
+        # Get scores and labels
+        for lab, result in zip(labels_list, results):
+            for res in result:
+                if res['label'] == 'entailment':
+                    score = res['score']
+                    total_dict[lab].append(int(score > threshold))
+                    score_dict[lab].append(score)
+    # Return results as a DataFrame
+    return pd.DataFrame([{
+        "total_dict": total_dict,
+        "score_dict": score_dict
+    }])
+# Example of how to use this UDF in a Spark DataFrame
+if __name__ == "__main__":
+    # Create Spark session
+    spark = SparkSession.builder \
+        .appName("Pandas UDF Inference Example") \
+        .getOrCreate()
+    # Sample data
+    data = [("text1",), ("text2",), ("text3",)]
+    columns = ["text_column"]
+    df = spark.createDataFrame(data, columns)
+    # Define your NLI pipeline here
+    nli_pipeline = None  # Replace with your actual NLI pipeline
+    # Define labels
+    labels = ["label1", "label2"]  # Replace with your actual labels
+    # Apply the Pandas UDF to the DataFrame
+    result_df = df.groupBy().apply(inference_run, nli_pipeline, labels)
+    result_df.show(truncate=False)
+    # Stop the Spark session
+    spark.stop()
 
 
