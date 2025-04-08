@@ -876,3 +876,21 @@ currdf_R15K = currdf_merge[( currdf_merge.DATE <= pd.to_datetime('2025-01-01')) 
 currdf_R15K_all = currdf_R15K[currdf_R15K['MCAP_GROUP'] == 'TOP1500']
 currdf_R15K_disc = currdf_R15K[(currdf_R15K['MCAP_GROUP'] == 'TOP1500') & (currdf_R15K['biz_group'] == 'Discretionary')]
 currdf_R15K_stap = currdf_R15K[(currdf_R15K['MCAP_GROUP'] == 'TOP1500') & (currdf_R15K['biz_group'] == 'Staples')]
+
+
+R15K_dfs = [currdf_R15K_all, currdf_R15K_disc, currdf_R15K_stap]
+R15K_categories = ['ALL_TOP1500', 'DISCRETIONARY_TOP1500', 'STAPLES_TOP1500']
+
+df_rel_cover_C1 = pd.DataFrame([])
+for i, df in enumerate(R15K_dfs):
+  df_cover = create_plot_df_coverage_rate(df, 
+                start_date = minDateNewQuery, 
+                end_date = maxDateNewQuery)
+  df_rel = create_plot_df(df, 
+                start_date = minDateNewQuery, 
+                end_date = maxDateNewQuery)
+  df_cover.reset_index(inplace=True)
+  df_rel.reset_index(inplace=True)
+  df_rel_cover = pd.merge(df_cover, df_rel, left_on='DATE_ROLLING', right_on='DATE_ROLLING')
+  df_rel_cover['CATEGORY'] = R15K_categories[i]
+  df_rel_cover_C1 = pd.concat([df_rel_cover_C1 , df_rel_cover])
