@@ -682,3 +682,29 @@ def inference_run(
             out_results.append(json.dumps(out_dict))
         # Ensure output series length matches input series length
         yield pd.Series(out_results)
+
+
+
+----------
+
+              WITH CombinedRecords AS (
+                  SELECT CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+                        UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+                  FROM EDS_PROD.QUANT.PARTHA_FUND_CTS_STG_1_VIEW
+                  UNION ALL
+                  SELECT CAST(CALL_ID AS STRING) AS CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+                        UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+                  FROM EDS_PROD.QUANT_LIVE.CTS_FUND_COMBINED_SCORES_H
+              ),
+              RankedRecords AS (
+                  SELECT *,
+                        ROW_NUMBER() OVER (PARTITION BY VERSION_ID ORDER BY DATE DESC) AS rn
+                  FROM CombinedRecords
+              )
+              SELECT *
+              FROM RankedRecords
+              WHERE rn = 1
+              AND VERSION_ID NOT IN (
+                  SELECT VERSION_ID 
+                  FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL
+              );
