@@ -687,6 +687,8 @@ def inference_run(
 
 ----------
 
+
+I want to create two parts of data and run them separately. modify query accordingly 
               WITH CombinedRecords AS (
                   SELECT CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
                         UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
@@ -736,3 +738,47 @@ currdf_spark = (currdf_spark
 )
 # Show the resulting DataFrame
 currdf_spark.show(truncate=False)
+
+
+--------
+
+
+WITH CombinedRecords AS (
+    SELECT CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+           UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+    FROM EDS_PROD.QUANT.PARTHA_FUND_CTS_STG_1_VIEW
+    UNION ALL
+    SELECT CAST(CALL_ID AS STRING) AS CALL_ID, ENTITY_ID, DATE, FILT_MD, FILT_QA, CALL_NAME, COMPANY_NAME, EARNINGS_CALL, ERROR, TRANSCRIPT_STATUS, 
+           UPLOAD_DT_UTC, VERSION_ID, EVENT_DATETIME_UTC, PARSED_DATETIME_EASTERN_TZ, SENT_LABELS_FILT_MD, SENT_LABELS_FILT_QA 
+    FROM EDS_PROD.QUANT_LIVE.CTS_FUND_COMBINED_SCORES_H
+),
+RankedRecords AS (
+    SELECT *,
+           ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS rn,  -- Assign row numbers without specific ordering
+           COUNT(*) OVER () AS total_count  -- Get the total count of records
+    FROM CombinedRecords
+),
+HalfSize AS (
+    SELECT *,
+           CASE 
+               WHEN rn <= total_count / 2 THEN 'Part1'
+               ELSE 'Part2'
+           END AS Part
+    FROM RankedRecords
+)
+-- Part 1
+SELECT *
+FROM HalfSize
+WHERE Part = 'Part1'
+AND VERSION_ID NOT IN (
+    SELECT VERSION_ID 
+    FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL
+);
+-- Part 2
+SELECT *
+FROM HalfSize
+WHERE Part = 'Part2'
+AND VERSION_ID NOT IN (
+    SELECT VERSION_ID 
+    FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL
+);
