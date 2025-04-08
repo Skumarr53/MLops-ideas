@@ -780,3 +780,22 @@ SplitRecords AS (
 )
 SELECT *
 FROM SplitRecords;
+\
+
+-----
+
+
+Aggregate logic
+
+
+market_cap['MCAP_GROUP'] = market_cap['MCAP_RANK'].apply(lambda x: classify_rank_15K(x))
+currdf['YEAR_MONTH'] = currdf['DATE'].apply(lambda x: str(x)[:7])
+currdf_merge = pd.merge(market_cap[['YEAR_MONTH', 'MCAP_GROUP', 'factset_entity_id','MCAP', 'biz_group']], currdf,  how='left', 
+                        left_on=['factset_entity_id','YEAR_MONTH'], 
+                        right_on = ['ENTITY_ID','YEAR_MONTH'])
+currdf_merge = currdf_merge[~currdf_merge.CALL_ID.isna()]
+currdf_R15K = currdf_merge[( currdf_merge.DATE <= pd.to_datetime('2025-01-01')) & (currdf_merge.DATE >= pd.to_datetime('2020-01-01'))]
+
+currdf_R15K_all = currdf_R15K[currdf_R15K['MCAP_GROUP'] == 'TOP1500']
+currdf_R15K_disc = currdf_R15K[(currdf_R15K['MCAP_GROUP'] == 'TOP1500') & (currdf_R15K['biz_group'] == 'Discretionary')]
+currdf_R15K_stap = currdf_R15K[(currdf_R15K['MCAP_GROUP'] == 'TOP1500') & (currdf_R15K['biz_group'] == 'Staples')]
