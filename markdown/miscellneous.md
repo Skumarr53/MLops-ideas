@@ -708,3 +708,31 @@ def inference_run(
                   SELECT VERSION_ID 
                   FROM EDS_PROD.QUANT.SANTHOSH_MASS_FT_NLI_DEMAND_DEV_202503_BACKFILL
               );
+
+
+------------ 
+
+from pyspark.sql import functions as F
+from pyspark.sql.types import MapType, StringType, FloatType, StructType, StructField
+# Define the schema for the dictionaries (adjust as necessary)
+total_dict_schema = MapType(StringType(), ArrayType(FloatType()))
+score_dict_schema = MapType(StringType(), ArrayType(FloatType()))
+# Assuming currdf_spark is your existing DataFrame
+currdf_spark = (currdf_spark
+    .withColumn("MD_SUMMARY", F.from_json(F.col("MD_SUMMARY"), 
+                                          StructType([
+                                              StructField("total_dict", total_dict_schema),
+                                              StructField("score_dict", score_dict_schema)
+                                          ])))
+    .withColumn("QA_SUMMARY", F.from_json(F.col("QA_SUMMARY"), 
+                                          StructType([
+                                              StructField("total_dict", total_dict_schema),
+                                              StructField("score_dict", score_dict_schema)
+                                          ])))
+    .withColumn("MD_FINAL_TOTAL", F.col("MD_SUMMARY.total_dict")) 
+    .withColumn("MD_FINAL_SCORE", F.col("MD_SUMMARY.score_dict")) 
+    .withColumn("QA_FINAL_TOTAL", F.col("QA_SUMMARY.total_dict")) 
+    .withColumn("QA_FINAL_SCORE", F.col("QA_SUMMARY.score_dict"))
+)
+# Show the resulting DataFrame
+currdf_spark.show(truncate=False)
