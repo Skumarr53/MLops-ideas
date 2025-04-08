@@ -780,6 +780,83 @@ SplitRecords AS (
 )
 SELECT *
 FROM SplitRecords;
+
+
+
+----------
+
+import pandas as pd
+import numpy as np
+
+def compute_aggregates(df):
+    """
+    Compute aggregate statistics for overall (all sectors combined) and
+    each individual sector, grouped by market_cap_group.
+
+    For each market cap group:
+      - Overall: Aggregates for all sectors combined.
+      - Sector-specific: Aggregates computed for each sector.
+
+    Parameters:
+        df (pd.DataFrame): DataFrame containing at least the following columns:
+                           'biz_group', 'market_cap_group', and 'value'.
+
+    Returns:
+        pd.DataFrame: Combined aggregate results with a 'category' column.
+                    The structure includes overall results (All Sectors) and sector-specific
+                    results, resulting in (number of sectors * 1 + 1 overall) records per market_cap_group.
+    """
+    # --- 1. Overall aggregated statistics (all sectors combined) per market cap group ---
+    overall_agg = (
+        df.groupby('market_cap_group')
+          .agg(
+              company_count=('biz_group', 'count'),
+              total_value=('value', 'sum'),
+              average_value=('value', 'mean')
+          )
+          .reset_index()
+    )
+    overall_agg['category'] = 'All Sectors'
+    # To ensure consistency in the final DataFrame, add 'biz_group' with NaN.
+    overall_agg['biz_group'] = np.nan
+
+    # --- 2. Sector-specific aggregated statistics ---
+    sector_agg = (
+        df.groupby(['biz_group', 'market_cap_group'])
+          .agg(
+              company_count=('biz_group', 'count'),
+              total_value=('value', 'sum'),
+              average_value=('value', 'mean')
+          )
+          .reset_index()
+    )
+    # Create a category label for the sector-specific aggregates.
+    sector_agg['category'] = sector_agg['biz_group'].apply(lambda x: f"Sector: {x}")
+
+    # --- 3. Combine both aggregates into a single DataFrame ---
+    final_agg = pd.concat([overall_agg, sector_agg], ignore_index=True)
+
+    # Optional: Reorder columns for clarity.
+    final_cols = ['category', 'market_cap_group', 'biz_group', 'company_count', 'total_value', 'average_value']
+    final_agg = final_agg[final_cols]
+
+    return final_agg
+
+# Example usage:
+if __name__ == "__main__":
+    # Sample data creation (replace this with your actual DataFrame)
+    np.random.seed(42)
+    sample_data = {
+        'biz_group': np.random.choice(['Sector A', 'Sector B', 'Sector C', 'Sector D', 
+                                       'Sector E', 'Sector F', 'Sector G', 'Sector H', 'Sector I'], 100),
+        'market_cap_group': np.random.choice(['Large', 'Medium', 'Small'], 100),
+        'value': np.random.rand(100) * 100  # Example numeric column for aggregation
+    }
+    df_sample = pd.DataFrame(sample_data)
+    
+    # Compute aggregates
+    aggregated_df = compute_aggregates(df_sample)
+    print(aggregated_df)
 \
 
 -----
