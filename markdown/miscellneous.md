@@ -894,3 +894,71 @@ for i, df in enumerate(R15K_dfs):
   df_rel_cover = pd.merge(df_cover, df_rel, left_on='DATE_ROLLING', right_on='DATE_ROLLING')
   df_rel_cover['CATEGORY'] = R15K_categories[i]
   df_rel_cover_C1 = pd.concat([df_rel_cover_C1 , df_rel_cover])
+
+
+------
+
+import pandas as pd
+
+# Assuming the following functions exist and perform your specific aggregate calculations:
+# create_plot_df_coverage_rate(df, start_date, end_date)
+# create_plot_df(df, start_date, end_date)
+# Also assume that minDateNewQuery and maxDateNewQuery are defined.
+
+# Let's assume that your merged DataFrame is called currdf_merge and 
+# it contains at least the following columns: 
+# 'biz_group', 'market_cap_group', and 'DATE_ROLLING'
+
+# Get unique market cap groups; for example: ['Large', 'Medium', 'Small']
+market_cap_groups = ['Large', 'Medium', 'Small']
+# Get unique sectors (biz_group) available in the DataFrame
+sectors = currdf_merge['biz_group'].dropna().unique()
+
+# Create an empty DataFrame to store all aggregate results
+df_final = pd.DataFrame()
+
+# Iterate through each market cap group
+for mcap in market_cap_groups:
+    # === Aggregate for All Sectors within the Market Cap Group ===
+    df_all = currdf_merge[currdf_merge['market_cap_group'] == mcap]
+    if not df_all.empty:
+        # Compute the coverage rate and other aggregate metrics for the overall group
+        df_cover_all = create_plot_df_coverage_rate(df_all, 
+                            start_date=minDateNewQuery, 
+                            end_date=maxDateNewQuery)
+        df_rel_all = create_plot_df(df_all, 
+                            start_date=minDateNewQuery, 
+                            end_date=maxDateNewQuery)
+        df_cover_all.reset_index(inplace=True)
+        df_rel_all.reset_index(inplace=True)
+        df_all_agg = pd.merge(df_cover_all, df_rel_all, on='DATE_ROLLING')
+        # Label the scenario as overall for the given market cap group
+        df_all_agg['category'] = f"ALL_{mcap}"
+        # Append to the final DataFrame
+        df_final = pd.concat([df_final, df_all_agg], ignore_index=True)
+
+    # === Aggregate for Each Individual Sector within the Market Cap Group ===
+    for sector in sectors:
+        df_sector = currdf_merge[(currdf_merge['market_cap_group'] == mcap) & 
+                                 (currdf_merge['biz_group'] == sector)]
+        if not df_sector.empty:
+            df_cover_sector = create_plot_df_coverage_rate(df_sector, 
+                                start_date=minDateNewQuery, 
+                                end_date=maxDateNewQuery)
+            df_rel_sector = create_plot_df(df_sector, 
+                                start_date=minDateNewQuery, 
+                                end_date=maxDateNewQuery)
+            df_cover_sector.reset_index(inplace=True)
+            df_rel_sector.reset_index(inplace=True)
+            df_sector_agg = pd.merge(df_cover_sector, df_rel_sector, on='DATE_ROLLING')
+            # Label with both the sector name (uppercased) and the market cap group
+            df_sector_agg['category'] = f"{sector.upper()}_{mcap}"
+            # Append the sector-specific aggregates to the final DataFrame
+            df_final = pd.concat([df_final, df_sector_agg], ignore_index=True)
+
+# Optional: Display summary statistics to check the aggregated results
+print("Final aggregated DataFrame shape:", df_final.shape)
+print("Aggregated categories:", df_final['category'].unique())
+
+# Now, df_final contains (number of sectors * 3 + 3) aggregate results,
+# which, for example, with 9 sectors would yield 30 aggregate sets.
