@@ -962,3 +962,11 @@ print("Aggregated categories:", df_final['category'].unique())
 
 # Now, df_final contains (number of sectors * 3 + 3) aggregate results,
 # which, for example, with 9 sectors would yield 30 aggregate sets.
+
+
+-----------
+
+
+In our Databricks repositories, we organize our work into three main folders: development (dev), staging (stg), and production (prod), each of which is mapped to its corresponding Git branch. However, there is currently no stringent policy in place to prevent users from switching between these branches within the same folder and making modifications to the code. To improve security, it is essential to implement an additional layer of access control that restricts both access to and modifications of code in branches that users are not authorized to work on. This measure will help safeguard our codebase and maintain the integrity of our development process.
+
+- In the IM staging environment, when a Git folder is created within the repositories, it is directed to the appropriate user folders, and resulting in the creation of a Git clone folder in that location.
