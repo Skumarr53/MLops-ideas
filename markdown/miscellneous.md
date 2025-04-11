@@ -972,7 +972,10 @@ That's coz, back fill historical run was last run on 31 march I think. Daily bat
 -----
 
 
+For some reason below code is not creating 240 jobs which is number of partitions set to. Instead only 6 jobs ar created and cluster is configured with 5 workers and a driver. Find out what could be the reason. Code is provided in the image upload and modify the as per requirement.
 
+
+@pandas_udf()
 def inference_run(
     iterator: Iterator[pd.Series],
     nli_pipeline,
@@ -1027,3 +1030,12 @@ def inference_run(
         except Exception as e:
             # logger.error(f"Error in inference batch {batch_num}: {e}")
             raise Exception(f"Error in inference batch {batch_num}: {e}")
+
+----------
+
+I hope you’re doing well! I wanted to chat about my transition to Voya, especially regarding my compensation. After thinking it over, I realized I didn’t fully take into account the annual raise I’d get in my current job.
+
+Since I’m expecting an 8-10% increase at my consulting firm, I’d like to ask if we could adjust my compensation from the initial 15% to 25%. I think this change would better reflect my current expectations and the value I bring.
+
+
+-----------
