@@ -965,8 +965,65 @@ print("Aggregated categories:", df_final['category'].unique())
 
 
 -----------
+That's coz, back fill historical run was last run on 31 march I think. Daily batch has been setup and start batch processing from tomm onwards it pick all missing version ids will be during this gap. 
 
 
-In our Databricks repositories, we organize our work into three main folders: development (dev), staging (stg), and production (prod), each of which is mapped to its corresponding Git branch. However, there is currently no stringent policy in place to prevent users from switching between these branches within the same folder and making modifications to the code. To improve security, it is essential to implement an additional layer of access control that restricts both access to and modifications of code in branches that users are not authorized to work on. This measure will help safeguard our codebase and maintain the integrity of our development process.
 
-- In the IM staging environment, when a Git folder is created within the repositories, it is directed to the appropriate user folders, and resulting in the creation of a Git clone folder in that location.
+-----
+
+
+
+def inference_run(
+    iterator: Iterator[pd.Series],
+    nli_pipeline,
+    labels: List[str],
+    max_length: int = 512,
+    batch_size: int = 32,
+    threshold: float = 0.8
+) -> Iterator[pd.Series]:
+    for batch_num,batch in enumerate(iterator):
+        try:
+            # 'batch' is a Pandas Series where each element corresponds to a row
+            out_results = []
+            for row in batch:
+                # Initialize dictionaries per row
+                score_dict = {label: [] for label in labels}
+                total_dict = {label: [] for label in labels}
+                
+                # Each 'row' is expected to be a list (e.g., list of text pairs)
+                # If the row is empty or None, simply append an empty JSON object
+                row = row.tolist()
+                if row:
+                    # Prepare pairs for the current row
+                    # 'row' is assumed to be a list, so no need to flatten further unless nested.
+                    pairs = row if isinstance(row, list) else []
+                    # Replicate each pair for each label
+                    pair_list = list(chain.from_iterable([[x] * len(labels) for x in pairs]))
+                    labels_list = labels * len(pairs)
+                    flat_text_pairs = [{'text': t, 'text_pair': f"{l}."} for t, l in zip(pair_list, labels_list)]
+                    
+                    if flat_text_pairs:
+                        results = nli_pipeline(
+                            flat_text_pairs,
+                            padding=True,
+                            top_k=None,
+                            batch_size=batch_size,
+                            truncation=True,
+                            max_length=max_length
+                        )
+                        # Collect inference results
+                        for lab, result in zip(labels_list, results):
+                            for res in result:
+                                if res['label'] == 'entailment':
+                                    score = res['score']
+                                    total_dict[lab].append(int(score > threshold))
+                                    score_dict[lab].append(score)
+                
+                out_dict = {'total_dict': total_dict, 'score_dict': score_dict}
+                out_results.append(json.dumps(out_dict))
+            # Ensure output series length matches input series length
+            yield pd.Series(out_results)
+        
+        except Exception as e:
+            # logger.error(f"Error in inference batch {batch_num}: {e}")
+            raise Exception(f"Error in inference batch {batch_num}: {e}")
