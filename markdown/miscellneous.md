@@ -1039,3 +1039,58 @@ Since I’m expecting an 8-10% increase at my consulting firm, I’d like to ask
 
 
 -----------
+
+
+@pandas_udf(inference_schema, PandasUDFType.SCALAR)
+def inference_run(
+    iterator: Iterator[pd.Series],
+    nli_pipeline,
+    labels: List[str],
+    max_length: int = 512,
+    batch_size: int = 32,
+    threshold: float = 0.8
+) -> Iterator[pd.Series]:
+    import json
+
+    for batch in iterator:
+        # Flatten the batch: each row (a list of texts) is converted into 
+        # (text, label) pairs for all labels using a single list comprehension.
+        flat_pairs = [
+            (text, label)
+            for row in batch
+            for text in (row.tolist() if hasattr(row, "tolist") else row)
+            for label in labels
+        ]
+        
+        if flat_pairs:
+            # Prepare the flat text pairs for inference using the flattened pairs list.
+            flat_text_pairs = [{'text': t, 'text_pair': f"{l}."} for t, l in flat_pairs]
+            
+            # Invoke the pipeline with the entire flattened batch.
+            results = nli_pipeline(
+                flat_text_pairs,
+                padding=True,
+                top_k=None,
+                batch_size=batch_size,
+                truncation=True,
+                max_length=max_length
+            )
+            
+            # Initialize dictionaries to accumulate scores and binary assignments per label.
+            score_dict = {label: [] for label in labels}
+            total_dict = {label: [] for label in labels}
+            
+            # Process each result in tandem with its corresponding (text, label) pair.
+            for (_, label), result in zip(flat_pairs, results):
+                for res in result:
+                    if res['label'] == 'entailment':
+                        score = res['score']
+                        total_dict[label].append(int(score > threshold))
+                        score_dict[label].append(score)
+            
+            # Create a JSON output and broadcast it for every row in the original batch.
+            out_json = json.dumps({'total_dict': total_dict, 'score_dict': score_dict})
+            yield pd.Series([out_json] * len(batch))
+        else:
+            # If no text pairs exist, return an empty JSON for each row.
+            yield pd.Series([json.dumps({})] * len(batch))
