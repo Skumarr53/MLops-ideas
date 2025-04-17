@@ -1094,3 +1094,15 @@ def inference_run(
         else:
             # If no text pairs exist, return an empty JSON for each row.
             yield pd.Series([json.dumps({})] * len(batch))
+
+
+
+
+I have access to below link of MS copilot. is this what you were talking about in yesturdays call
+
+
+
+
+
+
+Yes, same one used for finetuning. Did you get chance to review results for this week?. Are you good with outcome. if yes then can finalize the workflow requireing no more chnages in the code.
